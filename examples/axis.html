@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API SDK 3dRudder</title>
+    <script src="../dist/3dRudder-1.0.0.js"></script>
+    <script>                
+        // initialized
+        SDK.on('init', function(init) {
+            console.log('init uid ' + init.uid + '= SDK uid ' + this.uid);
+            document.getElementById('device').innerHTML = 'server is on SDK version:' + init.version;
+            document.getElementById('main').hidden = false;
+        });
+        // on tick each frame 20ms
+        SDK.on('frame', function(frame) {
+            document.getElementById('out').innerHTML = JSON.stringify(frame, null, '\t');
+        });
+        // on event SDK 3dRudder connect/disconnect
+        SDK.on('connectedDevice', function(device) {
+            document.getElementById('device').innerHTML = `device port ${device.port} firmware ${device.firmware} connected ${device.connected}`;
+        });
+        // error event
+        SDK.on('error', function(error) {
+            document.getElementById('error').innerHTML = 'ERROR :' + error.message;
+        });
+        // end connection
+        SDK.on('end', function() {
+            document.getElementById('device').innerHTML = 'connection is off';
+            document.getElementById('main').hidden = true;
+            connect = false;
+            document.getElementById('button').innerHTML = "Start connection";
+        });
+
+        var connect = false;
+        function startStop() {
+            connect = !connect;
+            if (connect) {
+                SDK.init();
+                document.getElementById('button').innerHTML = "Stop connection";
+            }
+            else {
+                SDK.stop();
+                document.getElementById('button').innerHTML = "Start connection";
+            }
+        }
+        function playSound() {
+            var form = document.forms["frm1"];
+            SDK.playSound(parseInt(form["port"].value), parseInt(form["frequency"].value), parseInt(form["duration"].value), function(code) {
+                document.getElementById('device').innerHTML = "sound played: " + SDK.getErrorString(code);
+                console.log("sound");
+            });
+        }
+
+        function freeze() {
+            var form = document.forms["frmfreeze"];
+            var controller = SDK.controllers[parseInt(form["port"].value)];
+            controller.setFreeze(!controller.freeze, function(code, freeze) {
+                document.getElementById('device').innerHTML = "frozen: " + SDK.getErrorString(code);
+                document.getElementById('buttonFreeze').value = freeze ? "Unfreeze" : "Freeze";
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Messages</h1>
+    <button id="button" onClick="startStop()">Start connection</button>
+    <br>
+    <div id="device"></div>
+    <div id="error"></div>
+    <br>
+    <div id="main" hidden=true>
+        <form id="frm1">
+            Port: <input type="number" name="port"><br>
+            Frequency: <input type="number" name="frequency"><br>
+            Duration: <input type="number" name="duration"><br><br>
+            <input type="button" onclick="playSound()" value="PlaySound">
+        </form>
+        <form id="frmfreeze">
+            Port: <input type="number" name="port"><br>
+            <input type="button" onclick="freeze()" id="buttonFreeze" value="Freeze">
+        </form>      
+        <pre id="out"></pre>
+    </div>
+</body>
+</html>

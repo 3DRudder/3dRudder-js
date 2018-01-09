@@ -1,0 +1,51 @@
+{
+  "name": "3drudder-js",
+  "version": "1.0.0",
+  "description": "Javascript API for the 3dRudder controller",
+  "main": "src/index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/unit.js",
+    "build": "npm test && grunt"
+  },
+  "pre-push": [
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3DRudder/3dRudder-js.git"
+  },
+  "keywords": [
+    "3drudder",
+    "virtual",
+    "reality",
+    "foot-controller",
+    "vr"
+  ],
+  "author": "mvivant",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/3DRudder/3dRudder-js/issues"
+  },
+  "homepage": "https://github.com/3DRudder/3dRudder-js#readme",
+  "devDependencies": {
+    "browserify": "^14.5.0",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.2.0",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "mocha": "^4.0.1",
+    "should": "^13.1.3"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3",
+    "ws": "^3.3.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^3.0.3",
+    "utf-8-validate": "^3.0.4"
+  }
+}
