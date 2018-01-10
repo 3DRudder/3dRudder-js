@@ -26,6 +26,7 @@ Include in html page```<script src="../dist/3dRudder-x.x.x.js"></script>```
 * [Axis](/examples/axis.html)  
 * [WebGL (three.js)](/examples/webgl.html)
 * [WebVR (A-Frame)](https://github.com/3DRudder/aframe-3dRudder)
+* [WebGL/WebVR (BabylonJS)](https://github.com/3DRudder/babylonjs-3dRudder)
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)
