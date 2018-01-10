@@ -28,7 +28,7 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.min.js"></script>
-		<script src="../dist/3dRudder-1.0.1.js"></script>
+		<script src="../dist/3dRudder-1.0.2.js"></script>
 		<script>
 			// SETUP
 			var scene = new THREE.Scene();
@@ -53,6 +53,7 @@
 			scene.add( light );
 
 			// SDK init
+			var SDK = new Sdk3dRudder();
 			SDK.init();
 			var settings;			
 			function updateCamera() {

@@ -2,7 +2,7 @@
 ![language](https://img.shields.io/badge/Language-javascript-green.svg) 
 ![Node.js](https://img.shields.io/badge/Node.js-v8.9.1-green.svg)
 
-# 3dRudderjs v1.0.1
+# 3dRudderjs v1.0.2
 
 # Installation
 * **Node** ```npm install 3drudder-js```

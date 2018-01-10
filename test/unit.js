@@ -1,10 +1,11 @@
 var assert = require('assert');
 var should = require('should');
-var SDK = require('../src/index.js');
+var Sdk3dRudder = require('../src/index.js');
 
 describe('SDK', function() {
-    describe('#SDK()', function() {        
-        it('should default value', function() {
+    describe('#SDK()', function() {
+        var SDK = new Sdk3dRudder();        
+        it('should default value', function() {            
             assert.equal(SDK.host, '127.0.0.1');            
             assert.equal(SDK.port, 15698);            
             assert.equal(SDK.version, 0);
