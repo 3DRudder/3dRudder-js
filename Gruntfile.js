@@ -10,7 +10,7 @@ module.exports = function(grunt) {
                 options: {
                     ignore: ['ws'],
                     browserifyOptions: {
-                        standalone: 'SDK',
+                        standalone: 'Sdk3dRudder',
                     },
                 },
             },

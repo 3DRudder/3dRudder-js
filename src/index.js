@@ -347,4 +347,4 @@ Sdk.prototype.hide = function (port, hide, callback) {
 
 _.extend(Sdk.prototype, EventEmitter.prototype);
 
-module.exports = new Sdk();
+module.exports = Sdk;

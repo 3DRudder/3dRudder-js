@@ -2,7 +2,7 @@
 ![language](https://img.shields.io/badge/Language-javascript-green.svg) 
 ![Node.js](https://img.shields.io/badge/Node.js-v8.9.1-green.svg)
 
-# 3dRudderjs v1.0.1
+# 3dRudderjs v1.0.2
 
 # Installation
 * **Node** ```npm install 3drudder-js```
@@ -26,6 +26,7 @@ Include in html page```<script src="../dist/3dRudder-x.x.x.js"></script>```
 * [Axis](/examples/axis.html)  
 * [WebGL (three.js)](/examples/webgl.html)
 * [WebVR (A-Frame)](https://github.com/3DRudder/aframe-3dRudder)
+* [WebGL/WebVR (BabylonJS)](https://github.com/3DRudder/babylonjs-3dRudder)
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)

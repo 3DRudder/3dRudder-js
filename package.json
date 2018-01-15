@@ -1,6 +1,6 @@
 {
   "name": "3drudder-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Javascript API for the 3dRudder controller",
   "main": "src/index.js",
   "directories": {
