@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100px;
+        }
+        
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+    <script src="../dist/3dRudder-1.0.2.js"></script>
+    <script>
+        // Init the 3dRudder SDK
+        var SDK = new Sdk3dRudder();
+        SDK.init();
+        var threshold = 0.10;        
+
+        // This code loads the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
+
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // This function creates an <iframe> (and YouTube player)
+        // after the API code downloads.
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '360',
+                width: '640',
+                videoId: 'ktm5qnWx-rI',
+                /*events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+                }*/
+            });
+        }
+        // on tick each frame 20ms    
+        //SDK.on('frame', function(frame) {
+        setInterval( function() {
+            var controller = SDK.controllers[0];
+            if (controller.connected) {
+                var axis = controller.axis;
+                if (axis.pitch > threshold) { // PLAY
+                    player.playVideo();
+                } else if (axis.pitch < -threshold) { // PAUSE
+                    player.pauseVideo();
+                } 
+                if (Math.abs(axis.roll) > 0) { // FORWARD REWIND
+                    var time = player.getCurrentTime();
+                    time += 5*axis.roll;
+                    player.seekTo(time);
+                    //console.log("time" + time);                                                
+                } 
+                if (Math.abs(axis.yaw) > 0) { // VOLUME + VOLUME -
+                    var volume = player.getVolume();
+                    volume += 5*axis.yaw;
+                    player.setVolume(volume);
+                    //console.log("volume" + volume);
+                } 
+                if (axis.updown > threshold) {
+                    //toggleFullScreen();
+                } else if (axis.updown < -threshold) {
+                    //toggleFullScreen();   
+                }
+            }
+        }, 250); 
+    </script>
+</head>
+<html>
+  <body>
+    <!-- The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+    <table style="display: inline-block;">
+        <tr>
+            <th>3dRudder</th><th>Youtube</th>
+        </tr>
+        <tr>
+            <td>Forward</td><td>Play</td>
+        </tr>
+        <tr>
+            <td>Backward</td><td>Pause</td>
+        </tr>
+        <tr>
+            <td>Left</td><td>Rewind</td>
+        </tr>
+        <tr>
+            <td>Right</td><td>Fast Forward</td>
+        </tr>
+        <tr>
+            <td>Rotation Left</td><td>Volume-</td>
+        </tr>
+        <tr>
+            <td>Rotation Right</td><td>Volume+</td>
+        </tr>        
+    </table>
+  </body>
+</html>
