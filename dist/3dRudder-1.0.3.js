@@ -2369,7 +2369,7 @@ var Sdk = function(opts) {
      * the host of server
      * @type {url}
     */
-    this.host = opts.host || '127.0.0.1';
+    this.host = opts.host || 'localhost';
     /**
      * the port of server by default 15698
      * @type {integer}
@@ -2379,7 +2379,7 @@ var Sdk = function(opts) {
      * the scheme for websocket protocol
      * @type {string}
     */
-    this.schemeWs = opts.schemeWs || 'ws';
+    this.schemeWs = opts.schemeWs || 'wss';
     /**
      * the scheme for http protocol
      * @type {string}
