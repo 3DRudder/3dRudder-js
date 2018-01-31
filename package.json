@@ -1,6 +1,6 @@
 {
   "name": "3drudder-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Javascript API for the 3dRudder controller",
   "main": "src/index.js",
   "directories": {
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "mocha test/unit.js",
-    "build": "npm test && grunt"
+    "build": "npm test && grunt",
+    "sample": "node server.js"
   },
   "pre-push": [
     "test"
@@ -33,6 +34,7 @@
   "homepage": "https://github.com/3DRudder/3dRudder-js#readme",
   "devDependencies": {
     "browserify": "^14.5.0",
+    "express": "^4.16.2",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.2.0",
     "grunt-cli": "^1.2.0",

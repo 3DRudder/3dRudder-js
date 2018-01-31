@@ -6,7 +6,7 @@
 |:--------------:|:--------:|:--------:|:--------:|
 |   Chrome   |    ✔     |    ✔     |    ✔     |
 |   FireFox  |    ✔     |    ✔    |    ✔     |
-|   Edge   |    ✔     |    ✔    |    :x:     |
+|   Edge   |    ✔     |    :x:    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
 # 3dRudderjs v1.0.2
@@ -42,7 +42,11 @@ var x = rudder.axis.roll;
 * [WebGL (three.js)](/examples/webgl.html)
 * [WebVR (A-Frame)](https://github.com/3DRudder/aframe-3dRudder)
 * [WebGL/WebVR (BabylonJS)](https://github.com/3DRudder/babylonjs-3dRudder)
-* [Youtube](/examples/video.html)  
+* [Youtube](/examples/video.html)
+* ```npm run-script sample``` to see in local:
+  * Axis: http://localhost:3000/
+  * WebGL: http://localhost:3000/webgl/
+  * Youtube: http://localhost:3000/video/
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)
