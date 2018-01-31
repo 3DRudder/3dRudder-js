@@ -2,6 +2,13 @@
 ![language](https://img.shields.io/badge/Language-javascript-green.svg) 
 ![Node.js](https://img.shields.io/badge/Node.js-v8.9.1-green.svg)
 
+|      Browsers     | HTTP/WS  | HTTPS/WSS  | File://  |
+|:--------------:|:--------:|:--------:|:--------:|
+|   Chrome   |    ✔     |    ✔     |    ✔     |
+|   FireFox  |    ✔     |    ✔    |    ✔     |
+|   Edge   |    ✔     |    ✔    |    :x:     |
+|   Safari   |    :warning:     |    :warning:     |    :warning:     |
+
 # 3dRudderjs v1.0.2
 
 # Installation
@@ -12,7 +19,8 @@
 # Usage
 ## Node.js
 ```javascript
-var SDK = require('3drudder-js');
+var Sdk3dRudder = require('3drudder-js');
+var SDK = new Sdk3dRudder();
 SDK.init();
 var rudder = SDK.controllers[0];
 var x = rudder.axis.roll;
@@ -21,6 +29,13 @@ var x = rudder.axis.roll;
 
 ## Browser
 Include in html page```<script src="../dist/3dRudder-x.x.x.js"></script>```
+```javascript
+var SDK = new Sdk3dRudder();
+SDK.init();
+var rudder = SDK.controllers[0];
+var x = rudder.axis.roll;
+...
+```
 
 ## See examples  
 * [Axis](/examples/axis.html)  
