@@ -37,12 +37,17 @@ var Sdk = function(opts) {
      * the scheme for websocket protocol
      * @type {string}
     */
-    this.schemeWs = opts.schemeWs || 'wss';
+    this.schemeWs = opts.schemeWs || 'ws';
     /**
      * the scheme for http protocol
      * @type {string}
     */
     this.schemeHttp = opts.schemeHttp || 'http';
+    /**
+     * try to reconnect in ms
+     * @type {bool}
+    */
+   this.autoReconnect = false;
     /**
      * the time to try to reconnect in ms
      * @type {integer}
@@ -199,7 +204,8 @@ Sdk.prototype.setupConnection = function () {
                 console.log("WebSocket: closed");
                 break;
             default:	// Abnormal closure
-                _this.reconnect(e);
+                if (_this.autoReconnect)
+                    _this.reconnect(e);
                 break;
         } 
     };

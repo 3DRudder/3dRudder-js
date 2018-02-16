@@ -9,10 +9,11 @@ describe('SDK', function() {
             assert.equal(SDK.host, 'localhost');            
             assert.equal(SDK.port, 15698);            
             assert.equal(SDK.version, 0);
-            assert.equal(SDK.schemeWs, 'wss');
+            assert.equal(SDK.schemeWs, 'ws');
             assert.equal(SDK.schemeHttp, 'http');
             assert.equal(SDK.uid, 0);
             assert.equal(SDK.numberConnected, 0);
+            assert.equal(SDK.autoReconnect, false);
             assert.equal(SDK.autoReconnectInterval, 5000);
 
             SDK.controllers.should.have.length(4);
@@ -45,7 +46,7 @@ describe('SDK', function() {
         });
 
         it('should default function', function() {
-            assert.equal(SDK.getWsUrl(), 'wss://localhost:15698');
+            assert.equal(SDK.getWsUrl(), 'ws://localhost:15698');
             assert.equal(SDK.getHttpUrl(), 'http://localhost:15698');
             assert.equal(SDK.getErrorString(0), SDK.ERROR[0]);
             assert.notEqual(SDK.getErrorString(0), SDK.ERROR[1]);

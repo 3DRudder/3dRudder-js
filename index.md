@@ -20,7 +20,11 @@
 ## Node.js
 ```javascript
 var Sdk3dRudder = require('3drudder-js');
-var SDK = new Sdk3dRudder();
+// default options {host: "localhost", port: 15698, schemeWs: "ws", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
+var SDK = new Sdk3dRudder(); 
+or
+// with options
+var opts = {host: "127.0.0.0", port: 1234, schemeWs: "wss", autoReconnect: true, autoReconnectInterval: 1000 /*1 sec*/};
 SDK.init();
 var rudder = SDK.controllers[0];
 var x = rudder.axis.roll;

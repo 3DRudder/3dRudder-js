@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    :x:    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v1.0.2
+# 3dRudderjs v1.0.3
 
 # Installation
 * **Node** ```npm install 3drudder-js```
@@ -20,7 +20,13 @@
 ## Node.js
 ```javascript
 var Sdk3dRudder = require('3drudder-js');
-var SDK = new Sdk3dRudder();
+// default options {host: "localhost", port: 15698, schemeWs: "ws", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
+var SDK = new Sdk3dRudder(); 
+or
+// with options
+var opts = {host: "127.0.0.0", port: 1234, schemeWs: "wss", autoReconnect: true, autoReconnectInterval: 1000 /*1 sec*/};
+var SDK = new Sdk3dRudder(opts);
+
 SDK.init();
 var rudder = SDK.controllers[0];
 var x = rudder.axis.roll;
