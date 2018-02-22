@@ -22,6 +22,8 @@ describe('SDK', function() {
             SDK.should.have.properties('ERROR', 'STATUS');
 
             var controller = SDK.controllers[0];
+            controller.should.have.properties('MODE', 'CURVE');
+            controller.modeAxis.should.be.exactly(4).and.be.a.Number();
             controller.port.should.be.exactly(-1).and.be.a.Number();
             controller.firmware.should.be.exactly(0).and.be.a.Number();
             controller.status.should.be.exactly(0).and.be.a.Number();
@@ -39,6 +41,14 @@ describe('SDK', function() {
             axis.yaw.should.be.exactly(0).and.be.a.Number();
             axis.updown.should.be.exactly(0).and.be.a.Number();
             
+            controller.curves.should.have.properties('pitch', 'roll', 'yaw', 'updown');
+            var curves = controller.curves;            
+            curves.pitch.should.have.properties('deadzone', 'xSat', 'yMax', 'exp');
+            curves.pitch.deadzone.should.be.exactly(0).and.be.a.Number();
+            curves.pitch.xSat.should.be.exactly(1).and.be.a.Number();
+            curves.pitch.yMax.should.be.exactly(1).and.be.a.Number();
+            curves.pitch.exp.should.be.exactly(1).and.be.a.Number();
+
             controller.should.have.property('onFrozen').and.be.Null();
             controller.should.have.property('onHidden').and.be.Null();
             controller.should.have.property('onPlayedSound').and.be.Null();
@@ -72,6 +82,9 @@ describe('SDK', function() {
             controller.setHide.should.be.a.Function();
             controller.playSound.should.be.a.Function();
             controller.playSoundTones.should.be.a.Function();
+            controller.setModeAxis.should.be.a.Function();
+            controller.setCurves.should.be.a.Function();
+            controller.setCurve.should.be.a.Function();
         });
     });
 });

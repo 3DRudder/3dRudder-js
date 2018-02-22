@@ -58,7 +58,7 @@ var x = rudder.axis.roll;
 * ```npm install --save-optional bufferutil``` (optionnal)
 * ```npm install browserify -g``` -g is for global install
 * ```npm install grunt-cli -g```
-* ```grunt``` or ```npm run-script build```
+* ```npm run build```
 * Result in ```dist/3dRudder-x.x.x.js```
 
 ## Unit Test
