@@ -6,10 +6,10 @@ describe('SDK', function() {
     describe('#SDK()', function() {
         var SDK = new Sdk3dRudder();        
         it('should default value', function() {            
-            assert.equal(SDK.host, 'localhost');            
+            assert.equal(SDK.host, '127.51.100.82');            
             assert.equal(SDK.port, 15698);            
             assert.equal(SDK.version, 0);
-            assert.equal(SDK.schemeWs, 'ws');
+            assert.equal(SDK.schemeWs, 'wss');
             assert.equal(SDK.schemeHttp, 'http');
             assert.equal(SDK.uid, 0);
             assert.equal(SDK.numberConnected, 0);
@@ -56,8 +56,8 @@ describe('SDK', function() {
         });
 
         it('should default function', function() {
-            assert.equal(SDK.getWsUrl(), 'ws://localhost:15698');
-            assert.equal(SDK.getHttpUrl(), 'http://localhost:15698');
+            assert.equal(SDK.getWsUrl(), 'wss://127.51.100.82:15698');
+            assert.equal(SDK.getHttpUrl(), 'http://127.51.100.82:15698');
             assert.equal(SDK.getErrorString(0), SDK.ERROR[0]);
             assert.notEqual(SDK.getErrorString(0), SDK.ERROR[1]);
             assert.equal(SDK.getStatusString(0), SDK.STATUS[0]);

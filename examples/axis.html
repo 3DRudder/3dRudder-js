@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>API SDK 3dRudder</title>
-    <script src="../dist/3dRudder-1.0.3.js"></script>
+    <script src="../dist/3dRudder-1.0.4.js"></script>
     <script> 
         var SDK = new Sdk3dRudder();               
         // initialized
@@ -18,6 +18,15 @@
         // on event SDK 3dRudder connect/disconnect
         SDK.on('connectedDevice', function(device) {
             document.getElementById('device').innerHTML = `device port ${device.port} firmware ${device.firmware} connected ${device.connected}`;
+            // sample curves with deadzone 0.1
+            var controller = SDK.controllers[device.port];
+            controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+            controller.setCurves({
+                pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                roll: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}
+            });
         });
         // error event
         SDK.on('error', function(error) {
