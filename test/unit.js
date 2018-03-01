@@ -6,10 +6,10 @@ describe('SDK', function() {
     describe('#SDK()', function() {
         var SDK = new Sdk3dRudder();        
         it('should default value', function() {            
-            assert.equal(SDK.host, 'localhost');            
+            assert.equal(SDK.host, '127.51.100.82');            
             assert.equal(SDK.port, 15698);            
             assert.equal(SDK.version, 0);
-            assert.equal(SDK.schemeWs, 'ws');
+            assert.equal(SDK.schemeWs, 'wss');
             assert.equal(SDK.schemeHttp, 'http');
             assert.equal(SDK.uid, 0);
             assert.equal(SDK.numberConnected, 0);
@@ -22,6 +22,8 @@ describe('SDK', function() {
             SDK.should.have.properties('ERROR', 'STATUS');
 
             var controller = SDK.controllers[0];
+            controller.should.have.properties('MODE', 'CURVE');
+            controller.modeAxis.should.be.exactly(4).and.be.a.Number();
             controller.port.should.be.exactly(-1).and.be.a.Number();
             controller.firmware.should.be.exactly(0).and.be.a.Number();
             controller.status.should.be.exactly(0).and.be.a.Number();
@@ -39,6 +41,14 @@ describe('SDK', function() {
             axis.yaw.should.be.exactly(0).and.be.a.Number();
             axis.updown.should.be.exactly(0).and.be.a.Number();
             
+            controller.curves.should.have.properties('pitch', 'roll', 'yaw', 'updown');
+            var curves = controller.curves;            
+            curves.pitch.should.have.properties('deadzone', 'xSat', 'yMax', 'exp');
+            curves.pitch.deadzone.should.be.exactly(0).and.be.a.Number();
+            curves.pitch.xSat.should.be.exactly(1).and.be.a.Number();
+            curves.pitch.yMax.should.be.exactly(1).and.be.a.Number();
+            curves.pitch.exp.should.be.exactly(1).and.be.a.Number();
+
             controller.should.have.property('onFrozen').and.be.Null();
             controller.should.have.property('onHidden').and.be.Null();
             controller.should.have.property('onPlayedSound').and.be.Null();
@@ -46,8 +56,8 @@ describe('SDK', function() {
         });
 
         it('should default function', function() {
-            assert.equal(SDK.getWsUrl(), 'ws://localhost:15698');
-            assert.equal(SDK.getHttpUrl(), 'http://localhost:15698');
+            assert.equal(SDK.getWsUrl(), 'wss://127.51.100.82:15698');
+            assert.equal(SDK.getHttpUrl(), 'http://127.51.100.82:15698');
             assert.equal(SDK.getErrorString(0), SDK.ERROR[0]);
             assert.notEqual(SDK.getErrorString(0), SDK.ERROR[1]);
             assert.equal(SDK.getStatusString(0), SDK.STATUS[0]);
@@ -72,6 +82,9 @@ describe('SDK', function() {
             controller.setHide.should.be.a.Function();
             controller.playSound.should.be.a.Function();
             controller.playSoundTones.should.be.a.Function();
+            controller.setModeAxis.should.be.a.Function();
+            controller.setCurves.should.be.a.Function();
+            controller.setCurve.should.be.a.Function();
         });
     });
 });

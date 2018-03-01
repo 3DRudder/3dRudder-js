@@ -6,10 +6,10 @@
 |:--------------:|:--------:|:--------:|:--------:|
 |   Chrome   |    ✔     |    ✔     |    ✔     |
 |   FireFox  |    ✔     |    ✔    |    ✔     |
-|   Edge   |    ✔     |    :x:    |    :x:     |
+|   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v1.0.3
+# 3dRudderjs v1.0.4
 
 # Installation
 * **Node** ```npm install 3drudder-js```
@@ -20,11 +20,11 @@
 ## Node.js
 ```javascript
 var Sdk3dRudder = require('3drudder-js');
-// default options {host: "localhost", port: 15698, schemeWs: "ws", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
+// default options {host: "127.51.100.82", port: 15698, schemeWs: "wss", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
 var SDK = new Sdk3dRudder(); 
 or
 // with options
-var opts = {host: "127.0.0.0", port: 1234, schemeWs: "wss", autoReconnect: true, autoReconnectInterval: 1000 /*1 sec*/};
+var opts = {host: "127.0.0.0", port: 1234, schemeWs: "ws", autoReconnect: true, autoReconnectInterval: 1000 /*1 sec*/};
 var SDK = new Sdk3dRudder(opts);
 
 SDK.init();
@@ -46,8 +46,8 @@ var x = rudder.axis.roll;
 ## See examples  
 * [Axis](/examples/axis.html)  
 * [WebGL (three.js)](/examples/webgl.html)
-* [WebVR (A-Frame)](https://github.com/3DRudder/aframe-3dRudder)
-* [WebGL/WebVR (BabylonJS)](https://github.com/3DRudder/babylonjs-3dRudder)
+* [WebVR (A-Frame)](https://3drudder.github.io/aframe-3dRudder/)
+* [WebGL/WebVR (BabylonJS)](https://3drudder.github.io/babylonjs-3dRudder/)
 * [Youtube](/examples/video.html)
 * ```npm run-script sample``` to see in local:
   * Axis: http://localhost:3000/
@@ -58,7 +58,7 @@ var x = rudder.axis.roll;
 * ```npm install --save-optional bufferutil``` (optionnal)
 * ```npm install browserify -g``` -g is for global install
 * ```npm install grunt-cli -g```
-* ```grunt``` or ```npm run-script build```
+* ```npm run build```
 * Result in ```dist/3dRudder-x.x.x.js```
 
 ## Unit Test

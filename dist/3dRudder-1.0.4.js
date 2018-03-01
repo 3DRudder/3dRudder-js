@@ -2059,6 +2059,45 @@ var _ = require('underscore')
  * @namespace
  */
 var Controller = function() {
+    /**
+     * Status of 3dRudder
+     * @type {array[string]}
+    */
+    this.MODE = {angle: 0, normalized: 2, curve: 3, normalizedNonSymmectricalPitch: 4, curveNonSymmectricalPitch: 5};
+    this.CURVE = {yaw: 0, pitch: 1, roll: 2, updown: 3};
+    /**
+     * controller's modeAxis
+     * @type {integer}
+    */
+    this.modeAxis = this.MODE.normalizedNonSymmectricalPitch;
+    /**
+     * Value for default curves by axis
+     * @type {curves}
+     * @prop {float} pitch
+     *  Represent the forward/backward axis [-1,1]
+     * @prop {float} roll
+     *  Represent the right/left axis [-1,1]
+     * @prop {float} yaw
+     *  Represent the rotation right/left axis [-1,1]
+     * @prop {float} updown
+     *  Represent the up/down axis [-1,1]
+     * @prop {object} curve
+     *      @prop {float} deadzone
+     *      Represent the deadzone
+     *      @prop {float} xSat
+     *      Represent the saturation of X value
+     *      @prop {float} yMax
+     *      Represent the maximum of Y value
+     *      @prop {float} exp
+     *      Represent the exponentiel of curve
+    */
+   this.curves = {
+        pitch: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        roll: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        yaw: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        updown: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0}
+    }
+
     this.default();
 }
 
@@ -2114,6 +2153,10 @@ Controller.prototype.init = function(SDK, device) {
                 this.onPlayedSoundTones(code);
             this.onPlayedSoundTones = null;
         });
+
+        // Set mode & curves
+        this.setModeAxis(this.modeAxis);        
+        this.setCurves(this.curves)
     } else {
         this.default();        
     }
@@ -2231,6 +2274,60 @@ Controller.prototype.sendMessage = function(data) {
         return true;
     }
     return false;
+}
+
+/**
+ * Set modeAxis
+ *
+ * @param {integer} modeAxis
+ *  MODE [angle, normalized, curve]
+*/
+Controller.prototype.setModeAxis = function(modeAxis) {
+    var data = {
+        message: "modeAxis",
+        port: this.port,
+        value: modeAxis            
+    }
+    if (this.sendMessage(data)) {        
+        this.modeAxis = modeAxis;        
+    }       
+}
+
+/**
+ * Set curves
+ *
+ * @param {Object} curves
+ *  Curves {pitch, roll, yaw, updown}
+*/
+Controller.prototype.setCurves = function(curves) {
+    var data = {
+        message: "curves",
+        port: this.port,
+        value: curves            
+    }
+    if (this.sendMessage(data)) {        
+        this.curves = curves;        
+    }        
+}
+
+/**
+ * Set curve
+ *
+ * @param {string} axis
+ *  Type [pitch, roll, yaw, updown]
+ * @param {Object} curve
+ *  Curve {deadzone, xSat, yMax, exp}
+*/
+Controller.prototype.setCurve = function(axis, curve) {
+    var data = {
+        message: "curve",
+        port: this.port,
+        axis: axis,
+        value: curve            
+    }
+    if (this.sendMessage(data)) {        
+        this.curves[axis] = curve;        
+    }        
 }
 
 /**
@@ -2369,7 +2466,7 @@ var Sdk = function(opts) {
      * the host of server
      * @type {url}
     */
-    this.host = opts.host || 'localhost';
+    this.host = opts.host || '127.51.100.82';
     /**
      * the port of server by default 15698
      * @type {integer}
@@ -2379,7 +2476,7 @@ var Sdk = function(opts) {
      * the scheme for websocket protocol
      * @type {string}
     */
-    this.schemeWs = opts.schemeWs || 'ws';
+    this.schemeWs = opts.schemeWs || 'wss';
     /**
      * the scheme for http protocol
      * @type {string}

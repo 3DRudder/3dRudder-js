@@ -3,3 +3,5 @@ show_downloads: "true"
 theme: jekyll-theme-slate
 repository: 3dRudder/3dRudder-js
 #video_id: 'ktm5qnWx-rI'
+plugins:
+  - jemoji
