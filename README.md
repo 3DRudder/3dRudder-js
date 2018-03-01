@@ -6,10 +6,10 @@
 |:--------------:|:--------:|:--------:|:--------:|
 |   Chrome   |    ✔     |    ✔     |    ✔     |
 |   FireFox  |    ✔     |    ✔    |    ✔     |
-|   Edge   |    ✔     |    :x:    |    :x:     |
+|   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v1.0.3
+# 3dRudderjs v1.0.4
 
 # Installation
 * **Node** ```npm install 3drudder-js```
