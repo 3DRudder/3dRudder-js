@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Custom controls</title>
+    <script src="../dist/3dRudder-1.0.4.js"></script>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var zoom = 18;
+      var heading = 90;
+      var tilt = 45;
+      var map;      
+      var chicago = {lat: 41.85, lng: -87.65};
+      var SDK = new Sdk3dRudder();
+      SDK.enable = true;
+      /**
+       * The CenterControl adds a control to the map that recenters the map on
+       * Chicago.
+       * This constructor takes the control DIV as an argument.
+       * @constructor
+       */
+      function CenterControl(controlDiv, map) {
+
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Active the 3dRudder';
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.innerHTML = 'Disable 3dRudder';
+        controlUI.appendChild(controlText);
+
+        // Setup the click event listeners: simply set the map to Chicago.
+        controlUI.addEventListener('click', function() {
+            SDK.enable = !SDK.enable;
+            controlText.innerHTML = SDK.enable ? 'Disable 3dRudder' : 'Enable 3dRudder';
+            heading = map.getHeading();
+            zoom = map.getZoom();
+            tilt = map.getTilt();
+        });
+
+      }
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: chicago,
+            zoom: zoom,
+            mapTypeId: 'satellite',
+            heading: heading,
+            tilt: tilt,
+            rotateControl: true
+        });
+        
+        SDK.init();
+        
+        SDK.on('init', function(init) {
+            // Create the DIV to hold the control and call the CenterControl()
+            // constructor passing in this DIV.
+            var centerControlDiv = document.createElement('div');
+            var centerControl = new CenterControl(centerControlDiv, map);
+            centerControlDiv.index = 1;
+            map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+            console.log(map.getTilt() + " " + map.getHeading());
+        });
+        SDK.on('connectedDevice', function(device) {                        
+            var controller = SDK.controllers[device.port];
+            controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+            controller.setCurves({
+                pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                roll: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                updown: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0}
+            });
+        });
+        SDK.on('frame', function(frame) {            
+            //console.log(zoom);
+            var controller = frame.controllers[0];
+            if (SDK.enable && controller.connected && controller.status >= 6) { // Status InUse
+                zoom += controller.axis.updown * -0.05;
+                map.setZoom(Math.min(Math.max(0,zoom), 22));
+                map.panBy(controller.axis.roll * 10, controller.axis.pitch * -10);
+                //heading += controller.axis.yaw;
+                //map.setHeading(heading);
+                heading += controller.axis.yaw;
+                map.setHeading(heading);
+            }
+        });      
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    </script>
+  </body>
+</html>

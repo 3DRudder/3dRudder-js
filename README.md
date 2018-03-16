@@ -49,10 +49,12 @@ var x = rudder.axis.roll;
 * [WebVR (A-Frame)](https://3drudder.github.io/aframe-3dRudder/)
 * [WebGL/WebVR (BabylonJS)](https://3drudder.github.io/babylonjs-3dRudder/)
 * [Youtube](/examples/video.html)
+* [Google Maps](/examples/maps.html) rotation experimental
 * ```npm run-script sample``` to see in local:
   * Axis: http://localhost:3000/
   * WebGL: http://localhost:3000/webgl/
   * Youtube: http://localhost:3000/video/
+  * Maps: http://localhost:3000/maps/ 
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)
