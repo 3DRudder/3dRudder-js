@@ -23,7 +23,18 @@
         var SDK = new Sdk3dRudder();
         SDK.init();
         var threshold = 0.10;        
-
+        // on event SDK 3dRudder connect/disconnect
+        SDK.on('connectedDevice', function(device) {            
+            // sample curves with deadzone 0.1
+            var controller = SDK.controllers[device.port];
+            controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+            controller.setCurves({
+                pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                roll: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}
+            });
+        });
         // This code loads the IFrame Player API code asynchronously.
         var tag = document.createElement('script');
 

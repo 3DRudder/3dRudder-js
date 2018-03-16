@@ -14,6 +14,9 @@ app.get('/', function(req, res) {
 app.get('/video', function(req, res) {
     res.sendFile(path.join(__dirname+'/examples/video.html'));
 });
+app.get('/maps', function(req, res) {
+    res.sendFile(path.join(__dirname+'/examples/maps.html'));
+});
 app.get('/webgl', function(req, res) {
     res.sendFile(path.join(__dirname+'/examples/webgl.html'));
 });
