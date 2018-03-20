@@ -26,12 +26,11 @@
       var heading = 90;
       var tilt = 45;
       var map;      
-      var chicago = {lat: 41.85, lng: -87.65};
+      var city = {lat: 37.8140974, lng: -122.4779628};
       var SDK = new Sdk3dRudder();
       SDK.enable = true;
       /**
-       * The CenterControl adds a control to the map that recenters the map on
-       * Chicago.
+       * The CenterControl adds a control to the map that recenters the map.
        * This constructor takes the control DIV as an argument.
        * @constructor
        */
@@ -73,7 +72,7 @@
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-            center: chicago,
+            center: city,
             zoom: zoom,
             mapTypeId: 'satellite',
             heading: heading,
