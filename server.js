@@ -20,7 +20,9 @@ app.get('/maps', function(req, res) {
 app.get('/webgl', function(req, res) {
     res.sendFile(path.join(__dirname+'/examples/webgl.html'));
 });
-
+app.get('/poly', function(req, res) {
+    res.sendFile(path.join(__dirname+'/examples/poly.html'));
+});
 const server = http.createServer(app);
 server.listen(3000, function listening() {
     console.log('Listening on %d', server.address().port);
