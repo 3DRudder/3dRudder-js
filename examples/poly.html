@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+Copyright 2017 Google Inc. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+   https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+python -m http.server 8000
+https://poly.googleapis.com/v1/assets/5vbJ5vildOq/AIzaSyDrcd87yPPNiv7J7aq4uJzYD8JgqkRpG2c
+
+https://developers.google.com/poly/develop/web
+
+-->
+<html lang="en">
+	<head>
+		<title>Poly 3dRudder (three.js)</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+
+			#soundButton {
+				position: fixed;
+				bottom: 20px;
+				right: 20px;
+				padding: 8px;
+				color: #fff;
+				background-color: #555;
+				opacity: 0.7;
+			}
+			#freezeButton {
+				position: fixed;
+				bottom: 60px;
+				right: 20px;
+				padding: 8px;
+				color: #fff;
+				background-color: #555;
+				opacity: 0.7;
+			}
+
+
+			html {
+				height: 100%;
+			}
+			body {
+				height: 100%;
+				font-family: sans-serif;
+				line-height: 24px;
+			}
+			#viewer {
+				width: 100%;
+				height: calc(100% - 80px);
+			}
+			#info {
+				padding: 12px;
+				text-align: center;
+			}
+			#asset_name {
+				font-size: 22px;
+				font-weight: bold;
+			}
+			#asset_author {
+				color: #888;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="viewer"></div>
+
+		<div id="info">
+			<span id="asset_name">Title</span><br/>
+			by <span id="asset_author">Author</span>
+		</div>
+
+		<script src="js/three.min.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script src="js/MTLLoader.js"></script>		
+		<script src="js/orbit.js"></script>		
+		<script src="js/dat.gui.min.js"></script>
+		<script src="../dist/3dRudder-1.0.4.js"></script>
+		<script>
+			// THREE.JS VIEWER
+			const WIDTH = viewer.offsetWidth;
+			const HEIGHT = viewer.offsetHeight;
+			var camera = new THREE.PerspectiveCamera( 60, WIDTH / HEIGHT, 0.01, 100 );
+			camera.position.set( 5, 3, 5 );
+			camera.lookAt( 0, 1.5, 0 );
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 0x222222 );
+			scene.add( new THREE.GridHelper( 10, 10 ) );
+			var ambient = new THREE.HemisphereLight( 0xbbbbff, 0x886666, 0.75 );
+			ambient.position.set( -0.5, 0.75, -1 );
+			scene.add( ambient );
+			var light = new THREE.DirectionalLight( 0xffffff, 0.75 );
+			light.position.set( 1, 0.75, 0.5 );
+			scene.add( light );
+			var renderer = new THREE.WebGLRenderer({antialias: true, alpha:true});
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( WIDTH, HEIGHT );
+			viewer.appendChild( renderer.domElement );
+		
+			// SDK init 3dRudder
+			var SDK = new Sdk3dRudder();
+			SDK.init();
+			SDK.on('connectedDevice', function(device) {            
+				// sample curves with deadzone 0.1
+				var controller = SDK.controllers[device.port];
+				controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+				controller.setCurves({
+					pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					roll: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					yaw: {deadzone: 0.2, xSat: 1.0, yMax: 1.0, exp: 1.0},
+					updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0}
+				});
+			});
+		
+			var settings;			
+
+			//Create an orbit control
+			this.orbitControls = new THREE.Orbit3dRudder(this.camera);
+			//this.orbitControls.autoRotate = this.b_orbitAutoRotation;			
+			this.orbitControls.userRotateSpeed = 1;
+			this.orbitControls.userZoomSpeed = 0.5;
+			this.orbitControls.userPanSpeed = 0.01;
+			this.orbitControls.minDistance = 1.0;
+			this.orbitControls.maxDistance = 10;
+			//this.orbitControls.addEventListener( 'change',  this.DoRender.bind(this) );
+			var clock = new THREE.Clock(true);
+
+			function updateCamera() {
+				var controller = SDK.controllers[0];
+				if (controller.connected) {
+					var axis = controller.axis;
+					var timeElapsed = clock.getDelta();
+					var rotate = Math.abs(axis.yaw) * timeElapsed * settings.rotate;
+					if (axis.yaw > 0) 
+						this.orbitControls.rotateLeft(rotate); 
+					else if (axis.yaw < 0)
+						this.orbitControls.rotateRight(rotate);
+					rotate = Math.abs(axis.updown) * timeElapsed * settings.rotate;
+					if (axis.updown < 0) 
+						this.orbitControls.rotateUp(rotate); 
+					else if (axis.updown > 0) 
+						this.orbitControls.rotateDown(rotate);
+					var pan = axis.roll * timeElapsed * settings.pan;					
+					this.orbitControls.pan( new THREE.Vector3( -pan, 0, 0 ) );
+					var zoom = Math.pow(0.95,Math.abs(axis.pitch))* settings.zoom;
+					
+					if (axis.pitch < 0) 
+						this.orbitControls.zoomIn(zoom); 
+					else if (axis.pitch > 0)
+						this.orbitControls.zoomOut(zoom);
+
+				}
+			}
+			// RENDER scene
+			function animate() {
+				this.orbitControls.update();
+				requestAnimationFrame( animate );
+				renderer.render( scene, camera );
+				updateCamera();			
+			}
+			animate();
+			setupGui();
+			function setupGui() {
+				settings = {
+					rotate: 1,
+					pan: 1,
+					zoom: 1
+				};
+				var h;
+				var gui = new dat.GUI();
+				h = gui.addFolder( "Orbit Speed" );
+				h.add( settings, "rotate", 0.0, 10.0, 0.1 ).name( "Rotation" );
+				h.add( settings, "pan", 0.0, 10.0, 0.1 ).name( "Pan" );
+				h.add( settings, "zoom", 0.0, 10.0, 0.1 ).name( "Zoom" );							
+			}
+			// resize window
+			window.addEventListener( 'resize', onWindowResize, false );
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );				
+			}
+			function freeze() {
+				var controller = SDK.controllers[0];				
+				controller.setFreeze(!controller.freeze, function(code, freeze) {					
+					document.getElementById('freezeButton').innerHTML = freeze ? "UnFreeze" : "Freeze";
+				});
+			}
+			
+			// POLY REST API
+			const API_KEY = 'AIzaSyDrcd87yPPNiv7J7aq4uJzYD8JgqkRpG2c';
+
+
+			function loadAsset( id ) {
+				var url = `https://poly.googleapis.com/v1/assets/${id}/?key=${API_KEY}`;
+				var request = new XMLHttpRequest();
+				request.open( 'GET', url, true );
+				request.addEventListener( 'load', function ( event ) {
+					var asset = JSON.parse( event.target.response );
+					asset_name.textContent = asset.displayName;
+					asset_author.textContent = asset.authorName;
+					var format = asset.formats.find( format => { return format.formatType === 'OBJ'; } );
+					if ( format !== undefined ) {
+						var obj = format.root;
+						var mtl = format.resources.find( resource => { return resource.url.endsWith( 'mtl' ) } );
+						var path = obj.url.slice( 0, obj.url.indexOf( obj.relativePath ) );
+						var loader = new THREE.MTLLoader();
+						loader.setCrossOrigin( true );
+						loader.setMaterialOptions( { ignoreZeroRGBs: true } );
+						loader.setTexturePath( path );
+						loader.load( mtl.url, function ( materials ) {
+							var loader = new THREE.OBJLoader();
+							loader.setMaterials( materials );
+							loader.load( obj.url, function ( object ) {
+								var box = new THREE.Box3();
+								box.setFromObject( object );
+								// re-center
+								var center = box.getCenter();
+								center.y = box.min.y;
+								object.position.sub( center );
+								// scale
+								var scaler = new THREE.Group();
+								scaler.add( object );
+								scaler.scale.setScalar( 6 / box.getSize().length() );
+								scene.add( scaler );
+							} );
+						} );
+					}
+				} );
+				request.send( null );
+			}
+			if ( API_KEY.startsWith( '**' ) ) {
+				alert( 'Sample incorrectly set up. Please enter your API Key for the Poly API in the API_KEY variable.' );
+			}
+			var s = location.search;
+			pmodel = "5vbJ5vildOq";
+	    	if (s) 
+	        	pmodel = s.substring(s.indexOf("=")+1);        
+			loadAsset( pmodel );
+				
+		</script>
+
+	<button id="freezeButton" title="freeze/unfreeze" onclick="freeze()">Freeze</button>
+
+	</body>
+</html>
+

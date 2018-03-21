@@ -55,6 +55,7 @@ var x = rudder.axis.roll;
   * WebGL: http://localhost:3000/webgl/
   * Youtube: http://localhost:3000/video/
   * Maps: http://localhost:3000/maps/ 
+  * Google Poly: http://localhost:3000/poly or http://localhost:3000/poly?t=ID (ID of poly model)
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)
