@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sketchfab Viewer API example</title>
+
+    <!-- Insert this script -->    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.0.1/math.min.js"></script>
+    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.1.0.js"></script>
+    <script src="../dist/3dRudder-1.0.4.js"></script>
+    <script src="js/three.min.js"></script>
+</head>
+
+<body style="width:840px;margin:0 auto;">
+        
+    <!-- Insert an empty iframe -->
+    <iframe style="border:0" width="840" height="480" src="" id="api-frame" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
+    <!-- Initialize the viewer -->
+    <script type="text/javascript">
+    var iframe = document.getElementById( 'api-frame' );
+    
+    var urlid = '6a76697207814abf88f835a9eee2eb8d';
+    var s = location.search;
+    if (s) 
+        urlid = s.substring(s.indexOf("=")+1);
+    var version = '1.0.0';
+    // By default, the latest version of the viewer API will be used.
+    //var client = new Sketchfab( iframe );
+
+    // Alternatively, you can request a specific version.
+    // var client = new Sketchfab( '1.0.0', iframe );
+    var SDK = new Sdk3dRudder();
+    SDK.init();
+    SDK.on('connectedDevice', function(device) {            
+        // sample curves with deadzone 0.1
+        var controller = SDK.controllers[device.port];
+        controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+        controller.setCurves({
+            pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
+            roll: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
+            yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 4.0},
+            updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 4.0}
+        });
+    });
+
+    var target = new THREE.Vector3();
+    var position = new THREE.Vector3();
+    var radius = 20;
+    var phi = 0;
+    var theta = -1;
+
+    var client = new Sketchfab( version, iframe );
+    var error = function () {
+        console.error( 'Error api Sketchfab !' );
+    };
+    var EPS = 0.000001;
+
+    var success = function ( api ) {
+        window.api = api;
+        api.start( function () {
+            api.addEventListener( 'viewerready', function() {
+                api.getCameraLookAt( function( err, camera ) {
+                    position.fromArray(camera.position);
+                    target.fromArray(camera.target);                    
+                    console.log(target + " "+ position);
+                });
+            });
+            SDK.on('frame', function(frame) {
+                var controller = frame.controllers[0];
+                if (controller.connected && controller.status >= 6) {
+                    var axis = controller.axis;                    
+                    radius += -axis.pitch * 0.20;
+                    radius = Math.max( 0.5, Math.min( 500, radius ) );
+
+                    phi += axis.updown * 0.20;
+                    theta += axis.yaw * 0.20;
+
+                    phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );                    
+                    
+                    // orbit + zoom
+                    position.x = target.x + radius * Math.cos( phi ) * Math.cos( theta );
+                    position.y = target.y + radius * Math.cos( phi ) * Math.sin( theta );
+                    position.z = target.z + radius * Math.sin( phi );                    
+                    
+                    // pan                    
+                    var forward = new THREE.Vector3();
+                    forward.subVectors(target, position).normalize();
+                                    
+                    var right = new THREE.Vector3();
+                    right.crossVectors(forward, new THREE.Vector3(0,0,1));
+                    var pan = axis.roll * 0.20;    
+                    right.multiplyScalar(pan);
+                    target.add(right);                    
+                    
+                    //target[0] += Math.sin(theta) * pan;
+                    //target[1] += Math.cos(theta) * pan;
+                    
+                    api.lookat( position.toArray(), target.toArray(), 0 );
+                }
+            })
+        });        
+    };
+
+    client.init( urlid, {
+        success: success,
+        error: error,
+        camera: 0
+    });
+    </script>
+</body>
+</html>
+    
