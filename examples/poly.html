@@ -149,9 +149,8 @@ https://developers.google.com/poly/develop/web
 					else if (axis.updown > 0) 
 						this.orbitControls.rotateDown(rotate);
 					var pan = axis.roll * timeElapsed * settings.pan;					
-					this.orbitControls.pan( new THREE.Vector3( -pan, 0, 0 ) );
-					var zoom = Math.pow(0.95,Math.abs(axis.pitch))* settings.zoom;
-					
+					this.orbitControls.pan( new THREE.Vector3( -1, 0, 0 ), pan );					
+					var zoom = Math.pow(0.95,Math.abs(axis.pitch))* settings.zoom;					
 					if (axis.pitch < 0) 
 						this.orbitControls.zoomIn(zoom); 
 					else if (axis.pitch > 0)
@@ -171,7 +170,7 @@ https://developers.google.com/poly/develop/web
 			function setupGui() {
 				settings = {
 					rotate: 1,
-					pan: 1,
+					pan: 5,
 					zoom: 1
 				};
 				var h;

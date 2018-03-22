@@ -117,12 +117,15 @@ THREE.Orbit3dRudder = function ( object, domElement ) {
 		scale *= zoomScale;
 	};
 
-	this.pan = function ( distance ) {
+	this.pan = function ( distance, speed ) {		
 		distance.transformDirection( this.object.matrix );
-		distance.multiplyScalar( scope.userPanSpeed );
-
+		if (speed === undefined)
+			distance.multiplyScalar( scope.userPanSpeed );
+		else
+			distance.multiplyScalar( speed );
+		
 		this.object.position.add( distance );
-		this.center.add( distance );
+		this.center.add( distance );		
 	};
 
 	this.update = function () {

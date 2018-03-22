@@ -50,12 +50,14 @@ var x = rudder.axis.roll;
 * [WebGL/WebVR (BabylonJS)](https://3drudder.github.io/babylonjs-3dRudder/)
 * [Youtube](/examples/video.html)
 * [Google Maps](/examples/maps.html) rotation experimental
+* [Sketchfab Viewer](/examples/sketchfab.html) orbit mode
 * ```npm run-script sample``` to see in local:
   * Axis: http://localhost:3000/
   * WebGL: http://localhost:3000/webgl/
   * Youtube: http://localhost:3000/video/
   * Maps: http://localhost:3000/maps/ 
   * Google Poly: http://localhost:3000/poly or http://localhost:3000/poly?t=ID (ID of poly model)
+  * Sketchfab: http://localhost:3000/sketchfab or http://localhost:3000/sketchfab?t=ID (ID of sketchfab model)
 
 ## Build for browser
 * ```npm install --save-optional bufferutil``` (optionnal)
