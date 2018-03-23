@@ -23,6 +23,10 @@ app.get('/webgl', function(req, res) {
 app.get('/poly', function(req, res) {
     res.sendFile(path.join(__dirname+'/examples/poly.html'));
 });
+app.get('/sketchfab', function(req, res) {
+    res.sendFile(path.join(__dirname+'/examples/sketchfab.html'));
+});
+
 const server = http.createServer(app);
 server.listen(3000, function listening() {
     console.log('Listening on %d', server.address().port);
