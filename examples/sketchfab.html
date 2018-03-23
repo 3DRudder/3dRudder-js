@@ -20,7 +20,8 @@
     <script type="text/javascript">
     var iframe = document.getElementById( 'api-frame' );
     
-    var urlid = '6a76697207814abf88f835a9eee2eb8d';
+    var urlid = '1ae52e5a8f954cee99b9fae331eca742'
+    //'6a76697207814abf88f835a9eee2eb8d'; back to the futur
     var s = location.search;
     if (s) 
         urlid = s.substring(s.indexOf("=")+1);
@@ -47,6 +48,7 @@
     var target = new THREE.Vector3();
     var position = new THREE.Vector3();
     var radius = 20;
+    var scale = 1;
     var phi = 0;
     var theta = -1;
 
@@ -64,17 +66,25 @@
                     position.fromArray(camera.position);
                     target.fromArray(camera.target);                    
                     console.log(target + " "+ position);
+                    scale = target.distanceTo(position);
+                    radius = scale;
                 });
             });
+            var clock = new THREE.Clock(true);
             SDK.on('frame', function(frame) {
+                var timeElapsed = clock.getDelta();
                 var controller = frame.controllers[0];
                 if (controller.connected && controller.status >= 6) {
-                    var axis = controller.axis;                    
-                    radius += -axis.pitch * 0.20;
-                    radius = Math.max( 0.5, Math.min( 500, radius ) );
+                    // speed scale
+                    var forward = new THREE.Vector3();
+                    forward.subVectors(target, position);
+                    var speed = forward.length();
+                    var axis = controller.axis;                             
+                    radius += -axis.pitch * timeElapsed * speed;
+                    radius = Math.max( scale/10, Math.min( scale*10, radius ) );
 
-                    phi += axis.updown * 0.20;
-                    theta += axis.yaw * 0.20;
+                    phi += axis.updown * timeElapsed;
+                    theta += -axis.yaw * timeElapsed;
 
                     phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );                    
                     
@@ -83,13 +93,12 @@
                     position.y = target.y + radius * Math.cos( phi ) * Math.sin( theta );
                     position.z = target.z + radius * Math.sin( phi );                    
                     
-                    // pan                    
-                    var forward = new THREE.Vector3();
-                    forward.subVectors(target, position).normalize();
+                    // pan                                        
+                    forward.normalize();
                                     
                     var right = new THREE.Vector3();
                     right.crossVectors(forward, new THREE.Vector3(0,0,1));
-                    var pan = axis.roll * 0.20;    
+                    var pan = axis.roll * timeElapsed * speed;    
                     right.multiplyScalar(pan);
                     target.add(right);                    
                     
