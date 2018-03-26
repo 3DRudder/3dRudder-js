@@ -45,13 +45,15 @@
         });
     });
 
+    var mode = 1; // 0: orbit, 1: fps
     var target = new THREE.Vector3();
     var position = new THREE.Vector3();
+    var rotation = new THREE.Quaternion();
     var radius = 20;
     var scale = 1;
     var phi = 0;
     var theta = -1;
-
+    var UP = new THREE.Vector3(0,0,1);
     var client = new Sketchfab( version, iframe );
     var error = function () {
         console.error( 'Error api Sketchfab !' );
@@ -68,40 +70,72 @@
                     console.log(target + " "+ position);
                     scale = target.distanceTo(position);
                     radius = scale;
-                });
+
+                    var p = position.clone();
+                    var t = target.clone();
+                    //p.z = t.z = 0;
+                    p.normalize();
+                    t.normalize();
+                    var dir = new THREE.Vector3();
+                    dir.subVectors(t, p);
+                    dir.normalize();
+                    console.log(dir);
+                    var angle = dir.angleTo(new THREE.Vector3(0,1,0));
+                    console.log(angle);
+                    rotation.setFromAxisAngle(UP, angle);
+                    console.log(target);
+                });                
             });
             var clock = new THREE.Clock(true);
             SDK.on('frame', function(frame) {
                 var timeElapsed = clock.getDelta();
                 var controller = frame.controllers[0];
                 if (controller.connected && controller.status >= 6) {
-                    // speed scale
-                    var forward = new THREE.Vector3();
-                    forward.subVectors(target, position);
-                    var speed = forward.length();
-                    var axis = controller.axis;                             
-                    radius += -axis.pitch * timeElapsed * speed;
-                    radius = Math.max( scale/10, Math.min( scale*10, radius ) );
+                    // orbit
+                    if (mode == 0) {
+                        // speed scale
+                        var forward = new THREE.Vector3();
+                        forward.subVectors(target, position);
+                        var speed = forward.length();
+                        var axis = controller.axis;                             
+                        radius += -axis.pitch * timeElapsed * speed;
+                        radius = Math.max( scale/10, Math.min( scale*10, radius ) );
 
-                    phi += axis.updown * timeElapsed;
-                    theta += -axis.yaw * timeElapsed;
+                        phi += axis.updown * timeElapsed;
+                        theta += -axis.yaw * timeElapsed;
 
-                    phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );                    
-                    
-                    // orbit + zoom
-                    position.x = target.x + radius * Math.cos( phi ) * Math.cos( theta );
-                    position.y = target.y + radius * Math.cos( phi ) * Math.sin( theta );
-                    position.z = target.z + radius * Math.sin( phi );                    
-                    
-                    // pan                                        
-                    forward.normalize();
-                                    
-                    var right = new THREE.Vector3();
-                    right.crossVectors(forward, new THREE.Vector3(0,0,1));
-                    var pan = axis.roll * timeElapsed * speed;    
-                    right.multiplyScalar(pan);
-                    target.add(right);                    
-                    
+                        phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );                    
+                        
+                        // orbit + zoom
+                        position.x = target.x + radius * Math.cos( phi ) * Math.cos( theta );
+                        position.y = target.y + radius * Math.cos( phi ) * Math.sin( theta );
+                        position.z = target.z + radius * Math.sin( phi );                    
+                        
+                        // pan                                        
+                        forward.normalize();
+                                        
+                        var right = new THREE.Vector3();
+                        right.crossVectors(forward, UP);
+                        var pan = axis.roll * timeElapsed * speed;    
+                        right.multiplyScalar(pan);
+                        target.add(right);                    
+                    } 
+                    // mode FPS
+                    else if (mode == 1) {
+                        var axis = controller.axis;                             
+                        var forwardSpeed = axis.pitch * timeElapsed * scale;
+                        var strafeSpeed = axis.roll * timeElapsed * scale;
+                        var updownSpeed = axis.updown * timeElapsed * scale;
+                        var delta = new THREE.Quaternion().setFromAxisAngle(UP, -axis.yaw * timeElapsed);
+                        rotation.multiply(delta);
+                        console.log(target);
+                        var translation = new THREE.Vector3(strafeSpeed, forwardSpeed, updownSpeed).applyQuaternion(rotation);
+                        var forward = new THREE.Vector3(0,1,0);
+                        forward.applyQuaternion(rotation);
+
+                        position.add(translation);
+                        target = target.addVectors(position, forward);//.applyQuaternion(delta);
+                    }
                     //target[0] += Math.sin(theta) * pan;
                     //target[1] += Math.cos(theta) * pan;
                     
@@ -115,7 +149,7 @@
         success: success,
         error: error,
         camera: 0
-    });
+    });    
     </script>
 </body>
 </html>
