@@ -7,7 +7,7 @@
     <!-- Insert this script -->    
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.0.1/math.min.js"></script>
     <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.1.0.js"></script>
-    <script src="../dist/3dRudder-1.0.4.js"></script>
+    <script src="../dist/3dRudder-2.0.0.js"></script>
     <script src="js/three.min.js"></script>
 </head>
 
@@ -20,7 +20,7 @@
     <script type="text/javascript">
     var iframe = document.getElementById( 'api-frame' );
     
-    var urlid = '1ae52e5a8f954cee99b9fae331eca742'
+    var urlid = '1ae52e5a8f954cee99b9fae331eca742';
     //'6a76697207814abf88f835a9eee2eb8d'; back to the futur
     var s = location.search;
     if (s) 
@@ -35,17 +35,20 @@
     SDK.init();
     SDK.on('connectedDevice', function(device) {            
         // sample curves with deadzone 0.1
-        var controller = SDK.controllers[device.port];
-        controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
-        controller.setCurves({
-            pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
-            roll: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
-            yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 4.0},
-            updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 4.0}
+        var controller = SDK.controllers[device.port];        
+        controller.setAxesParam({
+            roll2YawCompensation: 0.0,
+            nonSymmetricalPitch: false,
+            curves: {
+                leftright: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+                forwardbackward: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},					
+                updown: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+                rotation: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 1.0}
+            }
         });
     });
 
-    var mode = 1; // 0: orbit, 1: fps
+    var mode = 0; // 0: orbit, 1: fps
     var target = new THREE.Vector3();
     var position = new THREE.Vector3();
     var rotation = new THREE.Quaternion();
@@ -98,11 +101,11 @@
                         forward.subVectors(target, position);
                         var speed = forward.length();
                         var axis = controller.axis;                             
-                        radius += -axis.pitch * timeElapsed * speed;
+                        radius += -axis.forwardbackward * timeElapsed * speed;
                         radius = Math.max( scale/10, Math.min( scale*10, radius ) );
 
                         phi += axis.updown * timeElapsed;
-                        theta += -axis.yaw * timeElapsed;
+                        theta += -axis.rotation * timeElapsed;
 
                         phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );                    
                         
@@ -116,17 +119,17 @@
                                         
                         var right = new THREE.Vector3();
                         right.crossVectors(forward, UP);
-                        var pan = axis.roll * timeElapsed * speed;    
+                        var pan = axis.leftright * timeElapsed * speed;    
                         right.multiplyScalar(pan);
                         target.add(right);                    
                     } 
                     // mode FPS
                     else if (mode == 1) {
                         var axis = controller.axis;                             
-                        var forwardSpeed = axis.pitch * timeElapsed * scale;
-                        var strafeSpeed = axis.roll * timeElapsed * scale;
+                        var forwardSpeed = axis.forwardbackward * timeElapsed * scale;
+                        var strafeSpeed = axis.leftright * timeElapsed * scale;
                         var updownSpeed = axis.updown * timeElapsed * scale;
-                        var delta = new THREE.Quaternion().setFromAxisAngle(UP, -axis.yaw * timeElapsed);
+                        var delta = new THREE.Quaternion().setFromAxisAngle(UP, -axis.rotation * timeElapsed);
                         rotation.multiply(delta);
                         console.log(target);
                         var translation = new THREE.Vector3(strafeSpeed, forwardSpeed, updownSpeed).applyQuaternion(rotation);

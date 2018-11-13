@@ -83,7 +83,7 @@ https://developers.google.com/poly/develop/web
 		<script src="js/MTLLoader.js"></script>		
 		<script src="js/orbit.js"></script>		
 		<script src="js/dat.gui.min.js"></script>
-		<script src="../dist/3dRudder-1.0.4.js"></script>
+		<script src="../dist/3dRudder-2.0.0.js"></script>
 		<script>
 			// THREE.JS VIEWER
 			const WIDTH = viewer.offsetWidth;
@@ -110,13 +110,12 @@ https://developers.google.com/poly/develop/web
 			SDK.init();
 			SDK.on('connectedDevice', function(device) {            
 				// sample curves with deadzone 0.1
-				var controller = SDK.controllers[device.port];
-				controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
-				controller.setCurves({
-					pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
-					roll: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
-					yaw: {deadzone: 0.2, xSat: 1.0, yMax: 1.0, exp: 1.0},
-					updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0}
+				var controller = SDK.controllers[device.port];				
+				controller.setCurves({					
+					leftright: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					forwardbackward: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},					
+					updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					rotation: {deadzone: 0.2, xSat: 1.0, yMax: 1.0, exp: 1.0},
 				});
 			});
 		
@@ -138,22 +137,22 @@ https://developers.google.com/poly/develop/web
 				if (controller.connected) {
 					var axis = controller.axis;
 					var timeElapsed = clock.getDelta();
-					var rotate = Math.abs(axis.yaw) * timeElapsed * settings.rotate;
-					if (axis.yaw > 0) 
+					var rotate = Math.abs(axis.rotation) * timeElapsed * settings.rotate;
+					if (axis.rotation > 0) 
 						this.orbitControls.rotateLeft(rotate); 
-					else if (axis.yaw < 0)
+					else if (axis.rotation < 0)
 						this.orbitControls.rotateRight(rotate);
 					rotate = Math.abs(axis.updown) * timeElapsed * settings.rotate;
 					if (axis.updown < 0) 
 						this.orbitControls.rotateUp(rotate); 
 					else if (axis.updown > 0) 
 						this.orbitControls.rotateDown(rotate);
-					var pan = axis.roll * timeElapsed * settings.pan;					
+					var pan = axis.leftright * timeElapsed * settings.pan;					
 					this.orbitControls.pan( new THREE.Vector3( -1, 0, 0 ), pan );					
-					var zoom = Math.pow(0.95,Math.abs(axis.pitch))* settings.zoom;					
-					if (axis.pitch < 0) 
+					var zoom = Math.pow(0.95,Math.abs(axis.forwardbackward))* settings.zoom;					
+					if (axis.forwardbackward < 0) 
 						this.orbitControls.zoomIn(zoom); 
-					else if (axis.pitch > 0)
+					else if (axis.forwardbackward > 0)
 						this.orbitControls.zoomOut(zoom);
 
 				}

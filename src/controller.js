@@ -9,51 +9,19 @@
  */
 var _ = require('underscore')
 , EventEmitter = require('events').EventEmitter
+, AxesParam = require('./axesparam')
 
 /**
  * Controller object.
  * 
  * @namespace
  */
-var Controller = function() {
+var Controller = function() {    
     /**
-     * Status of 3dRudder
-     * @type {array[string]}
+     * Axes param
+     * @type {AxesParam}
     */
-    this.MODE = {angle: 0, normalized: 2, curve: 3, normalizedNonSymmectricalPitch: 4, curveNonSymmectricalPitch: 5};
-    this.CURVE = {yaw: 0, pitch: 1, roll: 2, updown: 3};
-    /**
-     * controller's modeAxis
-     * @type {integer}
-    */
-    this.modeAxis = this.MODE.normalizedNonSymmectricalPitch;
-    /**
-     * Value for default curves by axis
-     * @type {curves}
-     * @prop {float} pitch
-     *  Represent the forward/backward axis [-1,1]
-     * @prop {float} roll
-     *  Represent the right/left axis [-1,1]
-     * @prop {float} yaw
-     *  Represent the rotation right/left axis [-1,1]
-     * @prop {float} updown
-     *  Represent the up/down axis [-1,1]
-     * @prop {object} curve
-     *      @prop {float} deadzone
-     *      Represent the deadzone
-     *      @prop {float} xSat
-     *      Represent the saturation of X value
-     *      @prop {float} yMax
-     *      Represent the maximum of Y value
-     *      @prop {float} exp
-     *      Represent the exponentiel of curve
-    */
-   this.curves = {
-        pitch: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
-        roll: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
-        yaw: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
-        updown: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0}
-    }
+    this.axesParam = new AxesParam();
 
     this.default();
 }
@@ -111,9 +79,9 @@ Controller.prototype.init = function(SDK, device) {
             this.onPlayedSoundTones = null;
         });
 
-        // Set mode & curves
-        this.setModeAxis(this.modeAxis);        
-        this.setCurves(this.curves)
+        // Set AxesParam
+        this.setAxesParam(this.axesParam);        
+        //this.setCurves(this.curves)
     } else {
         this.default();        
     }
@@ -200,11 +168,11 @@ Controller.prototype.default = function () {
      * @prop {float} updown
      *  Represent the up/down axis [-1,1]
     */
-    this.axis = {
-        pitch: 0,
-        roll: 0,
-        yaw: 0,
-        updown: 0
+    this.axis = {        
+        leftright: 0,
+        forwardbackward: 0,        
+        updown: 0,
+        rotation: 0,
     };
     // events
     this.removeAllListeners('status');
@@ -234,19 +202,18 @@ Controller.prototype.sendMessage = function(data) {
 }
 
 /**
- * Set modeAxis
+ * Set Axes Param
  *
- * @param {integer} modeAxis
- *  MODE [angle, normalized, curve]
+ * @param {AxesParam} axesParam
 */
-Controller.prototype.setModeAxis = function(modeAxis) {
+Controller.prototype.setAxesParam = function(axesParam) {
     var data = {
-        message: "modeAxis",
+        message: "axesParam",
         port: this.port,
-        value: modeAxis            
+        value: axesParam            
     }
     if (this.sendMessage(data)) {        
-        this.modeAxis = modeAxis;        
+        this.axesParam = axesParam;        
     }       
 }
 
@@ -263,7 +230,7 @@ Controller.prototype.setCurves = function(curves) {
         value: curves            
     }
     if (this.sendMessage(data)) {        
-        this.curves = curves;        
+        this.axesParam.curves = curves;        
     }        
 }
 
@@ -283,7 +250,7 @@ Controller.prototype.setCurve = function(axis, curve) {
         value: curve            
     }
     if (this.sendMessage(data)) {        
-        this.curves[axis] = curve;        
+        this.axesParam.curves[axis] = curve;        
     }        
 }
 

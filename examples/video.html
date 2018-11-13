@@ -17,7 +17,7 @@
             background-color: #dddddd;
         }
     </style>
-    <script src="../dist/3dRudder-1.0.4.js"></script>
+    <script src="../dist/3dRudder-2.0.0.js"></script>
     <script>
         // Init the 3dRudder SDK
         var SDK = new Sdk3dRudder();
@@ -26,13 +26,12 @@
         // on event SDK 3dRudder connect/disconnect
         SDK.on('connectedDevice', function(device) {            
             // sample curves with deadzone 0.1
-            var controller = SDK.controllers[device.port];
-            controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
+            var controller = SDK.controllers[device.port];            
             controller.setCurves({
-                pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                roll: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}
+                leftright: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                forwardbackward: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},                
+                updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                rotation: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}
             });
         });
         // This code loads the IFrame Player API code asynchronously.
@@ -62,20 +61,20 @@
             var controller = SDK.controllers[0];
             if (controller.connected) {
                 var axis = controller.axis;
-                if (axis.pitch > threshold) { // PLAY
+                if (axis.forwardbackward > threshold) { // PLAY
                     player.playVideo();
-                } else if (axis.pitch < -threshold) { // PAUSE
+                } else if (axis.forwardbackward < -threshold) { // PAUSE
                     player.pauseVideo();
                 } 
-                if (Math.abs(axis.roll) > 0) { // FORWARD REWIND
+                if (Math.abs(axis.leftright) > 0) { // FORWARD REWIND
                     var time = player.getCurrentTime();
-                    time += 5*axis.roll;
+                    time += 5*axis.leftright;
                     player.seekTo(time);
                     //console.log("time" + time);                                                
                 } 
-                if (Math.abs(axis.yaw) > 0) { // VOLUME + VOLUME -
+                if (Math.abs(axis.rotation) > 0) { // VOLUME + VOLUME -
                     var volume = player.getVolume();
-                    volume += 5*axis.yaw;
+                    volume += 5*axis.rotation;
                     player.setVolume(volume);
                     //console.log("volume" + volume);
                 } 

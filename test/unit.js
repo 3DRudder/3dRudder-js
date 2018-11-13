@@ -19,11 +19,13 @@ describe('SDK', function() {
             SDK.controllers.should.have.length(4);
             SDK.host.should.be.a.String();
             should(SDK.port).be.a.Number();
-            SDK.should.have.properties('ERROR', 'STATUS');
+            SDK.should.have.properties('ERROR', 'STATUS', 'AXES');
+            SDK.AXES.LeftRight.should.be.exactly(0).and.be.a.Number();
+            SDK.AXES.ForwardBackward.should.be.exactly(1).and.be.a.Number();
+            SDK.AXES.UpDown.should.be.exactly(2).and.be.a.Number();
+            SDK.AXES.Rotation.should.be.exactly(3).and.be.a.Number();
 
-            var controller = SDK.controllers[0];
-            controller.should.have.properties('MODE', 'CURVE');
-            controller.modeAxis.should.be.exactly(4).and.be.a.Number();
+            var controller = SDK.controllers[0];                                   
             controller.port.should.be.exactly(-1).and.be.a.Number();
             controller.firmware.should.be.exactly(0).and.be.a.Number();
             controller.status.should.be.exactly(0).and.be.a.Number();
@@ -34,20 +36,24 @@ describe('SDK', function() {
             controller.sensors.forEach(function(value) {
                 assert(value === 0, 'sensors not equal 0');
             });
-            controller.axis.should.have.properties('pitch', 'roll', 'yaw', 'updown');
+            controller.axis.should.have.properties('leftright', 'forwardbackward', 'updown', 'rotation');
             var axis = controller.axis;            
-            axis.pitch.should.be.exactly(0).and.be.a.Number();
-            axis.roll.should.be.exactly(0).and.be.a.Number();
-            axis.yaw.should.be.exactly(0).and.be.a.Number();
+            axis.leftright.should.be.exactly(0).and.be.a.Number();
+            axis.forwardbackward.should.be.exactly(0).and.be.a.Number();
             axis.updown.should.be.exactly(0).and.be.a.Number();
+            axis.rotation.should.be.exactly(0).and.be.a.Number();
             
-            controller.curves.should.have.properties('pitch', 'roll', 'yaw', 'updown');
-            var curves = controller.curves;            
-            curves.pitch.should.have.properties('deadzone', 'xSat', 'yMax', 'exp');
-            curves.pitch.deadzone.should.be.exactly(0).and.be.a.Number();
-            curves.pitch.xSat.should.be.exactly(1).and.be.a.Number();
-            curves.pitch.yMax.should.be.exactly(1).and.be.a.Number();
-            curves.pitch.exp.should.be.exactly(1).and.be.a.Number();
+            controller.axesParam.should.have.properties('curves', 'roll2YawCompensation', 'nonSymmetricalPitch');
+            var axesParam = controller.axesParam;
+            axesParam.roll2YawCompensation.should.be.exactly(0.0).and.be.a.Number();
+            axesParam.nonSymmetricalPitch.should.be.exactly(true).and.be.a.Boolean();
+            axesParam.curves.should.have.properties('leftright', 'forwardbackward', 'updown', 'rotation');
+            var curves = axesParam.curves;            
+            curves.leftright.should.have.properties('deadzone', 'xSat', 'yMax', 'exp');
+            curves.leftright.deadzone.should.be.exactly(0).and.be.a.Number();
+            curves.leftright.xSat.should.be.exactly(1).and.be.a.Number();
+            curves.leftright.yMax.should.be.exactly(1).and.be.a.Number();
+            curves.leftright.exp.should.be.exactly(1).and.be.a.Number();
 
             controller.should.have.property('onFrozen').and.be.Null();
             controller.should.have.property('onHidden').and.be.Null();
@@ -82,7 +88,7 @@ describe('SDK', function() {
             controller.setHide.should.be.a.Function();
             controller.playSound.should.be.a.Function();
             controller.playSoundTones.should.be.a.Function();
-            controller.setModeAxis.should.be.a.Function();
+            controller.setAxesParam.should.be.a.Function();
             controller.setCurves.should.be.a.Function();
             controller.setCurve.should.be.a.Function();
         });

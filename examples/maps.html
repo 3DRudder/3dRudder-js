@@ -4,7 +4,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>Custom controls</title>
-    <script src="../dist/3dRudder-1.0.4.js"></script>
+    <script src="../dist/3dRudder-2.0.0.js"></script>
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -93,12 +93,11 @@
         });
         SDK.on('connectedDevice', function(device) {                        
             var controller = SDK.controllers[device.port];
-            controller.setModeAxis(controller.MODE.curveNonSymmectricalPitch);
             controller.setCurves({
-                pitch: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                roll: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                yaw: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                updown: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0}
+                leftright: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                forwardbackward: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
+                updown: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
+                rotation: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}                
             });
         });
         SDK.on('frame', function(frame) {            
@@ -107,10 +106,10 @@
             if (SDK.enable && controller.connected && controller.status >= 6) { // Status InUse
                 zoom += controller.axis.updown * -0.05;
                 map.setZoom(Math.min(Math.max(0,zoom), 22));
-                map.panBy(controller.axis.roll * 10, controller.axis.pitch * -10);
+                map.panBy(controller.axis.roll * 10, controller.axis.leftright * -10);
                 //heading += controller.axis.yaw;
                 //map.setHeading(heading);
-                heading += controller.axis.yaw;
+                heading += controller.axis.rotation;
                 map.setHeading(heading);
             }
         });      

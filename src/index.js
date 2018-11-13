@@ -60,13 +60,20 @@ var Sdk = function(opts) {
      * Error code
      * @type {array[string]}
     */
-    this.ERROR = ["Success", "Not connected", "Fail", "Incorrect command", "Timeout", "Wrong signature", "Not ready"];
+    this.ERROR = ["Success", "Not connected", "Fail", "Incorrect command", "Timeout", "DeviceNotSupported", "DeviceInitError", "ValidationError",
+     "ValidationTimeOut", "Not ready", "FirmwareNeedToBeUpdated", "NotInitialized", "NotSupported", "DashboardInstallError", "DashboardUpdateError"];
 
     /**
      * Status of 3dRudder
      * @type {array[string]}
     */
-    this.STATUS = ["No status", "No foot stay still", "Initialisation", "Put your feet", "Put second foot", "Stay still", "In use", "Extended mode"];
+    this.STATUS = ["No status", "No foot stay still", "Initialisation", "Put your feet", "Put second foot", "Stay still", "In use", "Frozen"/*253*/, "IsNotConnected"/*254*/];
+
+    /**
+     * Axes of 3dRudder
+     * @type {array[string]}
+    */    
+    this.AXES = {LeftRight: 0, ForwardBackward: 1, UpDown: 2, Rotation: 3};    
 
     /**
      * 4 controllers max

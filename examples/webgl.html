@@ -28,7 +28,7 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.min.js"></script>
-		<script src="../dist/3dRudder-1.0.4.js"></script>
+		<script src="../dist/3dRudder-2.0.0.js"></script>
 		<script>
 			// SETUP
 			var scene = new THREE.Scene();
@@ -55,13 +55,27 @@
 			// SDK init
 			var SDK = new Sdk3dRudder();
 			SDK.init();
+			SDK.on('connectedDevice', function(device) {            
+			// sample curves 
+			var controller = SDK.controllers[device.port];        
+			controller.setAxesParam({
+				roll2YawCompensation: 0.0,
+				nonSymmetricalPitch: true,
+				curves: {
+					leftright: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					forwardbackward: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},					
+					updown: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+					rotation: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 1.0}
+				}
+			});
+		});
 			var settings;			
 			function updateCamera() {
 				var controller = SDK.controllers[0];
 				if (controller.connected) {
-					camera.translateZ(-controller.axis.pitch * settings.speedZ);
-					camera.rotation.y += THREE.Math.degToRad(-controller.axis.yaw * settings.speedRotationY);
-					camera.translateX(controller.axis.roll * settings.speedX);
+					camera.translateZ(-controller.axis.forwardbackward * settings.speedZ);
+					camera.rotation.y += THREE.Math.degToRad(-controller.axis.rotation * settings.speedRotationY);
+					camera.translateX(controller.axis.leftright * settings.speedX);
 					camera.translateY(controller.axis.updown * settings.speedY);
 				}
 			}
