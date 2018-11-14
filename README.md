@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v1.0.4
+# 3dRudderjs v2.0.0
 
 # Installation
 * **Node** ```npm install 3drudder-js```
@@ -29,6 +29,26 @@ var SDK = new Sdk3dRudder(opts);
 
 SDK.init();
 var rudder = SDK.controllers[0];
+// if you want to custom the behaviour of 3dRudder
+/* by default {roll2YawCompensation: 0.0, nonSymmetricalPitch: true,
+    curves: {
+        leftright: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        forwardbackward: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},					
+        updown: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        rotation: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0}
+    }
+}*/
+
+controller.setAxesParam({
+    roll2YawCompensation: 0.15,
+    nonSymmetricalPitch: true,
+    curves: {
+        leftright: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+        forwardbackward: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},					
+        updown: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 2.0},
+        rotation: {deadzone: 0.15, xSat: 1.0, yMax: 1.0, exp: 1.0}
+    }
+});
 var x = rudder.axis.roll;
 ...
 ```
