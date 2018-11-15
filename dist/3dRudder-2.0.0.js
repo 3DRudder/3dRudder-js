@@ -2598,6 +2598,10 @@ var Sdk = function(opts) {
         });        
     });
 
+    this.on('error', function(error) {
+        console.log(`error ${error.message}`);
+    });
+
     this.on('end', function(device) {
         this.controllers.forEach( function(controller) {           
             controller.default();
