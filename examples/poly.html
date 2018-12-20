@@ -144,11 +144,11 @@ https://developers.google.com/poly/develop/web
 						this.orbitControls.rotateRight(rotate);
 					rotate = Math.abs(axis.updown) * timeElapsed * settings.rotate;
 					if (axis.updown < 0) 
-						this.orbitControls.rotateUp(rotate); 
+						this.orbitControls.rotateDown(rotate); 
 					else if (axis.updown > 0) 
-						this.orbitControls.rotateDown(rotate);
+						this.orbitControls.rotateUp(rotate);
 					var pan = axis.leftright * timeElapsed * settings.pan;					
-					this.orbitControls.pan( new THREE.Vector3( -1, 0, 0 ), pan );					
+					this.orbitControls.pan( new THREE.Vector3( 1, 0, 0 ), pan );					
 					var zoom = Math.pow(0.95,Math.abs(axis.forwardbackward))* settings.zoom;					
 					if (axis.forwardbackward < 0) 
 						this.orbitControls.zoomIn(zoom); 
