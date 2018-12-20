@@ -94,10 +94,10 @@
         SDK.on('connectedDevice', function(device) {                        
             var controller = SDK.controllers[device.port];
             controller.setCurves({
-                leftright: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                forwardbackward: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                updown: {deadzone: 0.25, xSat: 1.0, yMax: 1.0, exp: 2.0},
-                rotation: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}                
+                leftright: {deadzone: 0.1, xSat: 1.0, exp: 1.0},
+                forwardbackward: {deadzone: 0.1, xSat: 1.0, exp: 1.0},
+                updown: {deadzone: 0.25, xSat: 1.0, exp: 2.0},
+                rotation: {deadzone: 0.1, xSat: 1.0, exp: 1.0}                
             });
         });
         SDK.on('frame', function(frame) {            

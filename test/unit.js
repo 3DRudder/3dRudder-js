@@ -49,10 +49,9 @@ describe('SDK', function() {
             axesParam.nonSymmetricalPitch.should.be.exactly(true).and.be.a.Boolean();
             axesParam.curves.should.have.properties('leftright', 'forwardbackward', 'updown', 'rotation');
             var curves = axesParam.curves;            
-            curves.leftright.should.have.properties('deadzone', 'xSat', 'yMax', 'exp');
+            curves.leftright.should.have.properties('deadzone', 'xSat', 'exp');
             curves.leftright.deadzone.should.be.exactly(0).and.be.a.Number();
-            curves.leftright.xSat.should.be.exactly(1).and.be.a.Number();
-            curves.leftright.yMax.should.be.exactly(1).and.be.a.Number();
+            curves.leftright.xSat.should.be.exactly(1).and.be.a.Number();            
             curves.leftright.exp.should.be.exactly(1).and.be.a.Number();
 
             controller.should.have.property('onFrozen').and.be.Null();

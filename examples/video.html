@@ -28,10 +28,10 @@
             // sample curves with deadzone 0.1
             var controller = SDK.controllers[device.port];            
             controller.setCurves({
-                leftright: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                forwardbackward: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},                
-                updown: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0},
-                rotation: {deadzone: 0.1, xSat: 1.0, yMax: 1.0, exp: 1.0}
+                leftright: {deadzone: 0.1, xSat: 1.0, exp: 1.0},
+                forwardbackward: {deadzone: 0.1, xSat: 1.0, exp: 1.0},                
+                updown: {deadzone: 0.1, xSat: 1.0, exp: 1.0},
+                rotation: {deadzone: 0.1, xSat: 1.0, exp: 1.0}
             });
         });
         // This code loads the IFrame Player API code asynchronously.

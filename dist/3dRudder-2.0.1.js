@@ -2079,10 +2079,10 @@ var AxesParam = function() {
      *      Represent the exponentiel of curve
     */
    this.curves = {
-        leftright: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
-        forwardbackward: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},                
-        updown: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
-        rotation: {deadzone: 0.0, xSat: 1.0, yMax: 1.0, exp: 1.0},
+        leftright: {deadzone: 0.0, xSat: 1.0, exp: 1.0},
+        forwardbackward: {deadzone: 0.0, xSat: 1.0, exp: 1.0},                
+        updown: {deadzone: 0.0, xSat: 1.0, exp: 1.0},
+        rotation: {deadzone: 0.0, xSat: 1.0, exp: 1.0},
     }
 
    /**
@@ -2263,14 +2263,14 @@ Controller.prototype.default = function () {
     /**
      * Value for each axis
      * @type {Axis}
-     * @prop {float} pitch
+     * @prop {float} forwardbackward
      *  Represent the forward/backward axis [-1,1]
-     * @prop {float} roll
-     *  Represent the right/left axis [-1,1]
-     * @prop {float} yaw
-     *  Represent the rotation right/left axis [-1,1]
+     * @prop {float} leftright
+     *  Represent the right/left axis [-1,1]     
      * @prop {float} updown
      *  Represent the up/down axis [-1,1]
+     * @prop {float} rotation
+     *  Represent the rotation right/left axis [-1,1]
     */
     this.axis = {        
         leftright: 0,
