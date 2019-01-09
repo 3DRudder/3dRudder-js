@@ -50,7 +50,7 @@ describe('SDK', function() {
             axesParam.curves.should.have.properties('leftright', 'forwardbackward', 'updown', 'rotation');
             var curves = axesParam.curves;            
             curves.leftright.should.have.properties('deadzone', 'xSat', 'exp');
-            curves.leftright.deadzone.should.be.exactly(0).and.be.a.Number();
+            curves.leftright.deadzone.should.be.exactly(0.15).and.be.a.Number();
             curves.leftright.xSat.should.be.exactly(1).and.be.a.Number();            
             curves.leftright.exp.should.be.exactly(1).and.be.a.Number();
 
