@@ -90,14 +90,12 @@ Controller.prototype.init = function(SDK, device) {
 /**
  * Update function.
  * @private
- * @param {SDK} SDK
- *   SDK object
- * @param {object} device
+ * @param {object} controller
  *   All infos of connected device.
 */
 Controller.prototype.update = function(controller) {
     if (controller.error) {
-        console.log("error update controller " + error);
+        console.log("error update controller " + SDK.getErrorString(controller.error));
     }
     else {
         this.sensors = controller.sensors;
