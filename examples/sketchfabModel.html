@@ -1,0 +1,759 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sketchfab Viewer API example</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Insert this script -->    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.0.1/math.min.js"></script>
+    <!--<script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.1.0.js"></script>-->
+    <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.4.2.js"></script>
+    <script src="../dist/3dRudder-2.0.2.js"></script>
+    <script src="js/three.min.js"></script>
+</head>
+
+<!-- CSS stuff -->
+<style>
+
+    .topright {
+        position: absolute;
+        top: 18px;
+        right: 26px;
+        font-size: 18px;
+        width: 25vw;
+        height: 10vw;
+    }
+
+    hr {
+        border: 0;
+        border-top-color: currentcolor;
+        border-top-style: none;
+        border-top-width: 0px;
+        border-top: 1px solid #c7c7c7;
+        margin: 15px 0;
+        margin-right: 2%;
+        margin-left: 2%;
+    }
+
+    #text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 50px;
+        color: white;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+    }
+
+    /* the modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* modal content */
+    .modal-content {
+        background-color: #f3f3f3;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        border-radius: 5px;
+    }
+
+    /* the close button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .customText {
+        font-family: Tahoma, Geneva, sans-serif; /*Impact, Charcoal, sans-serif;*/
+        text-align: center;
+    }
+
+    .customCardText {
+        font-family: Tahoma, Geneva, sans-serif; /*Impact, Charcoal, sans-serif;*/
+        text-align: center;
+    }
+
+    /* clear floats after image containers */
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .card {
+        background-color: #ffffff;
+        margin-bottom: 8px;
+        margin-right: 8px;
+        float: left;
+        width: 23%;
+        padding: 8px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        border-radius: 5px;
+    }
+
+    .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    img {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .container {
+        position: relative;
+        padding: 2px 2px;
+    }
+
+    #myImg {
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #myImg:hover {
+        opacity: 0.7;
+    }
+
+    #wrapper {
+        width: 100%;
+        overflow: hidden; /* add this to contain floated children */
+        /*border: 1px solid green;*/
+    }
+    #frame {
+        float:left; /* add this */
+        /*border: 1px solid red;*/
+    }
+    #settings {
+        background-color: #ffffff;
+        float: left;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        border-radius: 2px;
+        /*border: 1px solid blue;*/
+    }
+
+    .slidecontainer {
+        width: 75%;
+        padding-bottom: 10px;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 5px;
+        border-radius: 5px;
+        background: #c7c7c7;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider:hover {
+        opacity: 1;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #1bb599;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #1bb599;
+        cursor: pointer;
+    }
+
+    /**/
+    .topnav .search-container {
+        float: right;
+    }
+
+    .topnav input[type=text] {
+        padding: 6px;
+        margin-top: 8px;
+        font-size: 17px;
+        border: none;
+    }
+
+    .topnav .search-container button {
+        float: right;
+        padding: 6px 10px;
+        margin-top: 8px;
+        margin-right: 16px;
+        background: #ddd;
+        font-size: 17px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .topnav .search-container button:hover {
+        background: #ccc;
+    }
+
+    @media screen and (max-width: 600px) {
+        .topnav .search-container {
+            float: none;
+        }
+        .topnav a, .topnav input[type=text], .topnav .search-container button {
+            float: none;
+            display: block;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            padding: 14px;
+        }
+        .topnav input[type=text] {
+            border: 1px solid #ccc;
+        }
+    }
+
+    input[type=text] {
+        width: 130px;
+        height: 10px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: white;
+        background-image: url('https://www.w3schools.com/css/searchicon.png');
+        background-position: 10px 5px;
+        background-size: 15px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+
+    input[type=text]:focus {
+        border-color: #1bb599;
+        width: 15%;
+    }
+</style>
+
+<body bgcolor="#EAEAEA" style="width:auto; margin:auto; ">
+
+<!-- the modal class view -->
+<div id="myModal" class="modal">
+
+    <!-- modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="wrapper" style="margin-bottom: 1.5%; margin-top: 1.5%;">
+            <div id=frame style=" width: 75%; height: 600px; margin-left: 0.5%">
+                <iframe id="api-iframe" width="100%" height="100%" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" align="center" frameborder="0"></iframe>
+            </div>
+            <div id=settings align="center" style="width: 22%; margin-left: 5px; margin-bottom: 0px;">
+                <p class="customText" style="color: #444444; font-size:15px; margin-bottom: 0px">3dRudder Statuts: <p id="statuts" class="customText" style="color: #1bb599; font-size:15px; margin-top: 0px; margin-bottom: 10px"></p></p>
+                <hr>
+                <p class="customText" style="color: #1bb599; margin-top:30px">3dRudder Settings</p>
+                <hr>
+                <div class="slidecontainer">
+                    <p class="customText" style="color: #444444; font-size:12px;">Speed Rotation : <span id="speedRotation"></span></p>
+                    <input type="range" min="0.1" max="5" value="1" class="slider" step="0.05" id="speedRotationRange">
+                </div>
+                <hr style="width: 33.33%;">
+
+                <div class="slidecontainer">
+                    <p class="customText" style="color: #444444; font-size:12px;">Speed Forward & Backward : <span id="speedForwardBackward"></span></p>
+                    <input type="range" min="0.1" max="5" value="1" class="slider" step="0.05" id="speedForwardBackwardRange">
+                </div>
+                <hr style="width: 33.33%;">
+
+                <div class="slidecontainer">
+                    <p class="customText" style="color: #444444; font-size:12px;">Speed Left & Right : <span id="speedLeftRight"></span></p>
+                    <input type="range" min="0.1" max="5" value="1" class="slider" step="0.05" id="speedLeftRightRange">
+                </div>
+                <hr style="width: 33.33%;">
+
+                <div class="slidecontainer">
+                    <p class="customText" style="color: #444444; font-size:12px;">Speed Up & Down : <span id="speedUpDown"></span></p>
+                    <input type="range" min="0.1" max="5" value="1" class="slider" step="0.05" id="speedUpDownRange">
+                </div>
+                <hr>
+                <p class="customText" style="color: #444444; font-size:12px; margin-bottom: 0px; margin-top: 30px">Model's Title: <p id="modalTextName" class="customText" style="color: #1bb599; font-size:12px; margin-top: 0px; margin-bottom: 0px"></p></p>
+                <p class="customText" style="color: #444444; font-size:12px; margin-bottom: 0px">Model's Creator: <p id="modalTextAuthor" class="customText" style="color: #1bb599; font-size:12px; margin-top: 0px; margin-bottom: 0px"></p></p>
+                <!--<p class="customText" style="color: #444444; font-size:12px; margin-bottom: 0px">Sketchfab Model's ID: <p id="modalTextId" class="customText" style="color: #1bb599; font-size:12px; margin-top: 0px; margin-bottom: 0px"></p></p>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="dTitle">
+
+    <a id="topright" href="https://www.3drudder.com/" title="3dRudder" class="topright">
+        <img src="https://3drudder.github.io/Quake2VR/3dR_Logo.png" width="30%" height="30%" align="right">
+    </a>
+    <h1 id="hTitle" class="customText" style="color: #444444; font-size: 2vw">Sketchfab Example with 3dRudder</h1>
+    <hr>
+</div>
+
+<div class="search-container" style="margin-left: 3%; margin-bottom: 5px">
+    <input type="text" placeholder="Search.." name="search" id="searchField" >
+    <!--<button type="submit" onclick="sendNewRequest()" id="searchButton"><i class="fa fa-search"></i></button>-->
+</div>
+
+<h1 id="hNoResults" class="customText" style="color: rgba(0,0,0,0.17); font-size: 50px; display:none">Ouch... No results found.</h1>
+
+<!-- Card Example to be cloned -->
+<a name="b" href="" style="color: #1bb599; text-decoration: none; display: none"><div id="myBtn" class="card" data-modal="myModal">
+    <div style="width:100%; height: 12vw;">
+        <img name="img" src="" style="width:100%; height:100%;">
+    </div>
+    <div class="container">
+        <p class="customCardText"></p>
+    </div>
+</div></a>
+
+<!-- table of static clickable cards -->
+<div id='row' class="row" style="margin-left: 3%">
+</div>
+
+<!-- main script -->
+<script type="text/javascript">
+
+    let DEFAULT_NUMBER = 30; // Number of cardviews
+    let displayedCount = DEFAULT_NUMBER; // Number of models to display
+
+    let date = new Date();
+    date.setDate(date.getDate() - 7); // Set last week date
+
+    // Init 3dRudder variables
+    let mode = 0; // 0: orbit, 1: fps
+    let target = new THREE.Vector3();
+    let position = new THREE.Vector3();
+    let rotation = new THREE.Quaternion();
+    let radius = 20;
+    let scale = 1;
+    let phi = 0;
+    let theta = -1;
+    let UP = new THREE.Vector3(0,0,1);
+    let EPS = 0.000001;
+    let windowOpened = false;
+    let forwardBackwardSpeed = 1;
+    let rotationSpeed = 1;
+    let upDownSpeed = 1;
+    let leftRightSpeed = 1;
+
+    // 3dRudder SDK init
+    let SDK = new Sdk3dRudder();
+    SDK.init();
+    SDK.on('connectedDevice', function(device) {
+        // sample curves with deadzone 0.1
+        let controller = SDK.controllers[device.port];
+        controller.setAxesParam({
+            roll2YawCompensation: 0.0,
+            nonSymmetricalPitch: false,
+            curves: {
+                leftright: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                forwardbackward: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                updown: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                rotation: {deadzone: 0.15, xSat: 1.0, exp: 1.0}
+            }
+        });
+    });
+
+    //Init sliders settings
+    let sliderRot = document.getElementById("speedRotationRange");
+    let outputRot = document.getElementById("speedRotation");
+    let sliderFB = document.getElementById("speedForwardBackwardRange");
+    let outputFB = document.getElementById("speedForwardBackward");
+    let sliderUD = document.getElementById("speedUpDownRange");
+    let outputUD = document.getElementById("speedUpDown");
+    let sliderLR = document.getElementById("speedLeftRightRange");
+    let outputLR = document.getElementById("speedLeftRight");
+
+    outputRot.innerHTML = sliderRot.value;
+    sliderRot.oninput = function() {
+        outputRot.innerHTML = this.value;
+        rotationSpeed = this.value;        
+    };
+
+    outputFB.innerHTML = sliderFB.value;
+    sliderFB.oninput = function() {
+        outputFB.innerHTML = this.value;
+        forwardBackwardSpeed = this.value;
+    };
+
+    outputUD.innerHTML = sliderUD.value;
+    sliderUD.oninput = function() {
+        outputUD.innerHTML = this.value;
+        upDownSpeed = this.value;
+    };
+
+    outputLR.innerHTML = sliderLR.value;
+    sliderLR.oninput = function() {
+        outputLR.innerHTML = this.value;
+        leftRightSpeed = this.value;
+    };
+
+    ///////////////////////////////////////////////////////////////
+    //Reset speed scale settings
+    function resetSlidersValues () {
+        outputLR.innerHTML = 1;
+        outputRot.innerHTML = 1;
+        outputFB.innerHTML = 1;
+        outputUD.innerHTML = 1;
+        sliderLR.value = 1;
+        sliderRot.value = 1;
+        sliderFB.value = 1;
+        sliderUD.value = 1;
+        rotationSpeed = 1;
+        leftRightSpeed = 1;
+        upDownSpeed = 1;
+        forwardBackwardSpeed = 1;
+    }
+
+    //Sketchfab viewer api instantiate failed
+    let error = function () {
+        console.error( 'Error api Sketchfab !' );
+    };
+
+    //Ssketchfab viewer api instantiate succeeded
+    let success = function ( api ) {
+        window.api = api;
+        api.start( function () {
+            api.addEventListener( 'viewerready', function() {
+                api.getCameraLookAt( function( err, camera ) {
+                    position.fromArray(camera.position);
+                    target.fromArray(camera.target);
+                    console.log(target + " "+ position);
+                    scale = target.distanceTo(position);
+                    radius = scale;
+
+                    let p = position.clone();
+                    let t = target.clone();
+                    //p.z = t.z = 0;
+                    p.normalize();
+                    t.normalize();
+                    let dir = new THREE.Vector3();
+                    dir.subVectors(t, p);
+                    dir.normalize();
+                    console.log(dir);
+                    let angle = dir.angleTo(new THREE.Vector3(0,1,0));
+                    console.log(angle);
+                    rotation.setFromAxisAngle(UP, angle);
+                    console.log(target);
+                });
+            });
+            let clock = new THREE.Clock(true);
+            SDK.on('frame', function(frame) {
+                let timeElapsed = clock.getDelta();
+                let controller = frame.controllers[0];
+                document.getElementById("statuts").innerHTML = returnStatutsString(controller);
+                if (controller.connected && controller.status >= 6 && windowOpened) {
+                    // orbit
+                    if (mode == 0) {
+                        // speed scale
+                        let forward = new THREE.Vector3();
+                        forward.subVectors(target, position);
+                        let speed = forward.length();
+                        let axis = controller.axis;
+                        radius += -axis.forwardbackward * timeElapsed * (speed * forwardBackwardSpeed);
+                        radius = Math.max( scale/10, Math.min( scale*10, radius ) );
+
+                        phi += axis.updown * timeElapsed * upDownSpeed;
+                        theta += -axis.rotation * timeElapsed * rotationSpeed;
+                        
+                        phi = Math.max( -Math.PI/2, Math.min( Math.PI/2, phi ) );
+                        
+                        // orbit + zoom
+                        position.x = target.x + radius * Math.cos( phi ) * Math.cos( theta );
+                        position.y = target.y + radius * Math.cos( phi ) * Math.sin( theta );
+                        position.z = target.z + radius * Math.sin( phi );
+
+                        // pan
+                        forward.normalize();
+
+                        let right = new THREE.Vector3();
+                        right.crossVectors(forward, UP);
+                        let pan = axis.leftright * timeElapsed * (speed * leftRightSpeed);
+                        right.multiplyScalar(pan);
+                        target.add(right);
+                    }
+                    // mode FPS
+                    else if (mode == 1) {
+                        console.log("FPS Mode Enabled");
+                        let axis = controller.axis;
+                        let forwardSpeed = axis.forwardbackward * timeElapsed * forwardBackwardSpeed;
+                        let strafeSpeed = axis.leftright * timeElapsed * leftRightSpeed;
+                        let updownSpeed = -axis.updown * timeElapsed * upDownSpeed;
+                        let delta = new THREE.Quaternion().setFromAxisAngle(UP, -axis.rotation * timeElapsed * rotationSpeed);
+                        rotation.multiply(delta);
+                        console.log(target);
+                        let translation = new THREE.Vector3(strafeSpeed, forwardSpeed, updownSpeed).applyQuaternion(rotation);
+                        let forward = new THREE.Vector3(0,1,0);
+                        forward.applyQuaternion(rotation);
+
+                        position.add(translation);
+                        target = target.addVectors(position, forward);//.applyQuaternion(delta);
+                    }
+                    //target[0] += Math.sin(theta) * pan;
+                    //target[1] += Math.cos(theta) * pan;
+
+                    api.lookat( position.toArray(), target.toArray(), 0 );
+                }
+            })
+        });
+    };
+
+    // Return string for Error Code
+    function returnErrorString(controller) {
+        let controllerHandler = controller.error;
+        let str;
+        //ERROR[array]: ["Success", "Not connected", "Fail", "Incorrect command", "Timeout", "DeviceNotSupported", "DeviceInitError", "ValidationError", "ValidationTimeOut", "Not ready", "FirmwareNeedToBeUpdated", "NotInitialized", "NotSupported", "DashboardInstallError", "DashboardUpdateError"]
+
+        if (controllerHandler == 0) {
+            return true;
+        }
+        if (controllerHandler == 1) {
+            str = "Not Connected";
+        }
+
+        return str;
+    }
+
+    // Return string for Satuts & Error Code
+    function returnStatutsString(controller) {
+        let controllerHandler = controller.status;
+        let str;
+
+        // Check if errors first
+        /*if (returnErrorString) {
+            return returnErrorString();
+        }*/
+
+        // STATUS[array]: ["No status", "No foot stay still", "Initialisation", "Put your feet", "Put second foot", "Stay still", "In use", "Frozen"/*253*/, "IsNotConnected"/*254*/]
+        if (controllerHandler == 0){
+            str = "No statuts";
+        }
+        else if (controllerHandler == 1){
+            str = "No foot stay still";
+        }
+        else if (controllerHandler == 2){
+            str = "Initialisation";
+        }
+        else if (controllerHandler == 3){
+            str = "Put your feet";
+        }
+        else if (controllerHandler == 4){
+            str = "Put your second foot";
+        }
+        else if (controllerHandler == 5){
+            str = "Stay still";
+        }
+        else if (controllerHandler == 6){
+            str = "In use";
+        }
+        else if (controllerHandler == 7){
+            str = "Frozen";
+        }
+        else if (controllerHandler == 8){
+            str = "IsNotConnected";
+        }
+        else {
+            str = "Error";
+        }
+        return str;
+    }
+
+    //Function to manage async API XHR reponses
+    async function doRequestThings(url) {
+        let tab = [];
+        let datas = [];
+        let uids = [];
+        let btn = [];
+        console.log('tab '+tab);
+        console.log('datas '+datas);
+        console.log('uids '+uids);
+        console.log('button '+btn);
+        let result = await makeRequest("GET", url);
+        //let result = await makeRequest("GET", "https://api.sketchfab.com/v3/models?sort_by=-likeCount&published_since="+date.toISOString()); // Popular (weekly + most liked)
+        //let result = await makeRequest("GET", "https://api.sketchfab.com/v3/search?q=3dRudder&sort_by=-pertinence&type=models"); //Alternate link for tests
+
+        let data = JSON.parse(result);
+
+        data.results.forEach(sketchfabUid => {
+            tab.push(sketchfabUid.uid);
+            datas.push(sketchfabUid);
+        });
+
+        let modal = document.getElementById('myModal');
+        //let textId = document.getElementById('modalTextId');
+        let textName = document.getElementById('modalTextName');
+        let textAuthor = document.getElementById('modalTextAuthor');
+
+        if (tab.length == 0) {
+            document.getElementById('hNoResults').style.display = "";
+            return
+        }
+        else {
+            document.getElementById('hNoResults').style.display = "none";
+        }
+        if (tab.length < displayedCount)
+            displayedCount = tab.length;
+        else
+            displayedCount = DEFAULT_NUMBER;
+        for (let i = 0; i < displayedCount; i++) {
+            // Duplicate hidden 'b' card div
+            let clone = document.getElementsByName('b')[0].cloneNode(true);
+            clone.name = 'a';
+            clone.style.display = "";
+            document.getElementById("row").appendChild(clone);
+
+            // Init datas of each cards.
+            uids.push(tab[i]);
+            btn.push(document.getElementsByClassName('card')[i+1]);
+            btn[i].id = btn[i].id+i;
+
+            // Add listener when click on a vardview
+            btn[i].addEventListener("click", function () {
+                // Reset speed scale settings when open a new window
+                resetSlidersValues();
+
+                let modal = document.getElementById(this.dataset.modal);
+                let currentBtnID = this.id.replace( /^\D+/g, '');
+                modal.style.display = "block";
+                textName.innerHTML=datas[currentBtnID].name;
+                textAuthor.innerHTML=datas[currentBtnID].user.displayName;
+                document.getElementsByName("a")[currentBtnID].href = '#'+uids[currentBtnID];
+
+                // Init Modal Sketchfab viewer on click
+                let iframe = document.getElementById( 'api-iframe' );
+                //// By default, the latest version of the viewer API will be used.
+                let client = new Sketchfab( iframe );
+
+                //// Alternatively, you can request a specific version.
+                //// let client = new Sketchfab( '1.4.2', iframe );
+
+                client.init( uids[currentBtnID], {
+                    success: success,
+                    error: error,
+                    camera: 0
+                } );
+                windowOpened = true;
+            }, false);
+
+            // Fill cards with thumbnails and title
+            result = await makeRequest("GET", "https://sketchfab.com/oembed?url=https://sketchfab.com/models/"+tab[i]);
+            document.getElementsByName('img')[i+1].src=JSON.parse(result).thumbnail_url;
+            //document.getElementsByName('img')[i+1].style.width="100%";
+            //document.getElementsByName('img')[i+1].style.height="100%";
+            document.getElementsByClassName("customCardText")[i+1].style.fontSize="0.9vw";
+            document.getElementsByClassName("customCardText")[i+1].innerHTML=JSON.parse(result).title;
+        }
+
+        // Handle the close of the modal view
+        let span = document.getElementsByClassName("close")[0];
+
+        //// When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+            let iframe = document.getElementById("api-iframe");
+            iframe.src="about:blank";
+            windowOpened = false;
+        };
+        //// When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                let iframe = document.getElementById("api-iframe");
+                iframe.src="about:blank";
+                windowOpened = false;
+            }
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        sendNewRequest();
+        //doRequestThings("https://api.sketchfab.com/v3/models?sort_by=-likeCount&published_since="+date.toISOString());
+    });
+
+    // Send new request (for search)
+    function sendNewRequest() {
+        let q = document.getElementsByName('search')[0].value;
+        let url;
+        if (q === ""){
+            url = "https://api.sketchfab.com/v3/models?sort_by=-likeCount&published_since="+date.toISOString();
+        }
+        else {
+            url = "https://api.sketchfab.com/v3/search?q="+q+"&sort_by=-pertinence&type=models";
+        }
+
+        let myNode = document.getElementById("row");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        doRequestThings(url);
+    }
+
+    document.getElementById("searchField")
+        .addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                sendNewRequest();
+            }
+        });
+
+    // Function that make the request and return the response
+    function makeRequest(method, url) {
+        return new Promise(function (resolve, reject) {
+            let xhr = new XMLHttpRequest();
+            xhr.open(method, url);
+            xhr.onload = function () {
+                if (this.status >= 200 && this.status < 300) {
+                    resolve(xhr.response);
+                } else {
+                    reject({
+                        status: this.status,
+                        statusText: xhr.statusText
+                    });
+                }
+            };
+            xhr.onerror = function () {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            };
+            xhr.send();
+        });
+    }
+</script>
+</body>
+</html>
+    
