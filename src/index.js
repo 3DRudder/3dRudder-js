@@ -1,6 +1,6 @@
 /*!
  * 
- * 3dRudder v1.0.0                                                  
+ * 3dRudder v2.0.3                                                  
  * https://github.com/3DRudder/3dRudderjs                                        
  *                                                                             
  * Copyright 2017 3dRudder, Inc. and other contributors                      
@@ -14,6 +14,7 @@ var WebSocket = isNode ? require('ws') : (window.WebSocket || window.MozWebSocke
     , _ = require('underscore')
     , EventEmitter = require('events').EventEmitter
     , Controller = require('./controller');
+const fetch = require('node-fetch');
 
 /**
  * Sdk constructor.
@@ -23,6 +24,16 @@ var WebSocket = isNode ? require('ws') : (window.WebSocket || window.MozWebSocke
 */
 var Sdk = function(opts) {
     opts = opts || {};
+    /**
+     * if use the discovery by default
+     * @type {url}
+    */
+   this.discovery = opts.discovery || false;
+    /**
+     * the host of server
+     * @type {url}
+    */
+    this.discoveryUrl = opts.discoveryUrl || 'stun:224.0.0.82:15661';
     /**
      * the host of server
      * @type {url}
@@ -140,6 +151,9 @@ var Sdk = function(opts) {
             controller.default();
         });
     });
+
+    if (this.discovery)
+        this.startDiscovery();
 }
 
 /**
@@ -360,6 +374,42 @@ Sdk.prototype.freeze = function (port, freeze, callback) {
 Sdk.prototype.hide = function (port, hide, callback) {
     console.log('hide SDK');
     this.controllers[port].setHide(hide, callback);
+}
+
+/**
+ * Discovery for 3dRudder network.
+ *  
+*/
+Sdk.prototype.startDiscovery = function () {
+    console.log('discovery SDK');
+    var localConnection = new RTCPeerConnection({iceServers: [{urls: [this.discoveryUrl]}]});
+    localConnection.createDataChannel('discovery');
+    var _this = this;
+    localConnection.createOffer()
+    .then((desc) => {
+        console.log("setlocaldesc");
+        localConnection.setLocalDescription(desc);        
+        setTimeout(() => _this.stopDiscovery(localConnection), 500);
+    }, (error) => {
+        console.log("error create offer" + error);
+    });
+}
+
+/**
+ * Stop the discovery for 3dRudder network.
+ *  
+*/
+Sdk.prototype.stopDiscovery = function (localConnection) {    
+    console.log("discovery end");
+    localConnection.close();
+    var _this = this;
+    // fetch json
+    fetch('http://wb.3drudder-dev.com/WV/C.php')
+    .then(res => res.text())
+    .then(body => {
+        let urls = JSON.parse(body);        
+        _this.emit('discovery', urls);
+    });    
 }
 
 _.extend(Sdk.prototype, EventEmitter.prototype);

@@ -2,9 +2,9 @@
 <html>
 <head>
     <title>API SDK 3dRudder</title>
-    <script src="../dist/3dRudder-2.0.2.js"></script>
+    <script src="../dist/3dRudder-2.0.3.js"></script>
     <script> 
-        var SDK = new Sdk3dRudder();               
+        var SDK = new Sdk3dRudder();                   
         // initialized
         SDK.on('init', function(init) {
             console.log('init uid ' + init.uid + '= SDK uid ' + this.uid);
@@ -27,10 +27,28 @@
             document.getElementById('button').innerHTML = "Start connection";
         });
 
+        SDK.on('discovery', function(urls) {
+            if (urls.length > 0) {
+                //this.host = urls[i].ip;
+                document.getElementById('servers').innerHTML = `<label for="server">${urls.length} server(s) found</label>`;
+                var selectList = document.createElement("select");
+                selectList.id = "server";
+                document.getElementById('servers').appendChild(selectList);
+                for(i in urls) {
+                    var option = document.createElement("option");
+                    option.value = urls[i].ip;
+                    option.text = decodeURIComponent(escape(urls[i].name));
+                    selectList.appendChild(option);
+                    //document.getElementById('servers').innerHTML += `<option value=${urls[i].ip}>Ip: ${urls[i].ip} name: ${decodeURIComponent(escape(urls[i].name))} </option>`;
+                }
+            }
+        });
+
         var connect = false;
         function startStop() {
             connect = !connect;
-            if (connect) {
+            if (connect) {                
+                SDK.host = document.getElementById('server').value;
                 SDK.init();
                 document.getElementById('button').innerHTML = "Stop connection";
             }
@@ -55,10 +73,16 @@
                 document.getElementById('buttonFreeze').value = freeze ? "Unfreeze" : "Freeze";
             });
         }
+
+        function tryDiscovery() {
+            SDK.startDiscovery();
+        }
     </script>
 </head>
 <body>
     <h1>Messages</h1>
+    <button id="button" onClick="tryDiscovery()">Try Discovery</button>
+    <div id="servers"></div>
     <button id="button" onClick="startStop()">Start connection</button>
     <br>
     <div id="device"></div>

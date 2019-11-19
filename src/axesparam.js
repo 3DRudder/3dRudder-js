@@ -1,6 +1,6 @@
 /*!
  * 
- * 3dRudder v1.0.0                                                  
+ * 3dRudder v2.0.3                                                  
  * https://github.com/3DRudder/3dRudderjs                                        
  *                                                                             
  * Copyright 2017 3dRudder, Inc. and other contributors                      
