@@ -28,17 +28,21 @@
         });
 
         SDK.on('discovery', function(urls) {
+            document.getElementById('servers').innerHTML = `<label for="server">${urls.length} server(s) found</label>`;
             if (urls.length > 0) {
-                //this.host = urls[i].ip;
-                document.getElementById('servers').innerHTML = `<label for="server">${urls.length} server(s) found</label>`;
-                var selectList = document.createElement("select");
+                //this.host = urls[i].ip;                
+                var selectList = document.createElement("fieldset");
                 selectList.id = "server";
                 document.getElementById('servers').appendChild(selectList);
                 for(i in urls) {
-                    var option = document.createElement("option");
+                    var option = document.createElement("input");
+                    option.type = "radio";
                     option.value = urls[i].ip;
-                    option.text = decodeURIComponent(escape(urls[i].name));
+                    option.name = "server";
+                    option.id = i;
+                    //option.text = decodeURIComponent(escape(urls[i].name));                    
                     selectList.appendChild(option);
+                    selectList.innerHTML += `<label for="${i}">${decodeURIComponent(escape(urls[i].name))}</label>`;                    
                     //document.getElementById('servers').innerHTML += `<option value=${urls[i].ip}>Ip: ${urls[i].ip} name: ${decodeURIComponent(escape(urls[i].name))} </option>`;
                 }
             }
@@ -48,7 +52,9 @@
         function startStop() {
             connect = !connect;
             if (connect) {                
-                SDK.host = document.getElementById('server').value;
+                let radio = document.querySelector('input[name="server"]:checked');
+                if (radio)
+                    SDK.host = radio.value;
                 SDK.init();
                 document.getElementById('button').innerHTML = "Stop connection";
             }
@@ -75,13 +81,14 @@
         }
 
         function tryDiscovery() {
+            document.getElementById('servers').innerHTML = `looking for servers...`;
             SDK.startDiscovery();
         }
     </script>
 </head>
 <body>
     <h1>Messages</h1>
-    <button id="button" onClick="tryDiscovery()">Try Discovery</button>
+    <button id="disco" onClick="tryDiscovery()">Try Discovery</button>
     <div id="servers"></div>
     <button id="button" onClick="startStop()">Start connection</button>
     <br>

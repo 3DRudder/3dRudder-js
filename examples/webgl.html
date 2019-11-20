@@ -23,12 +23,21 @@
 				background-color: #555;
 				opacity: 0.7;
 			}
+			#discoveryButton {
+				position: fixed;
+				bottom: 100px;
+				right: 20px;
+				padding: 8px;
+				color: #fff;
+				background-color: #555;
+				opacity: 0.7;
+			}
 		</style>
 	</head>
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/dat.gui.min.js"></script>
-		<script src="../dist/3dRudder-2.0.2.js"></script>
+		<script src="../dist/3dRudder-2.0.3.js"></script>
 		<script>
 			// SETUP
 			var scene = new THREE.Scene();
@@ -69,7 +78,9 @@
 				}
 			});
 		});
-			var settings;			
+			var settings;
+			var gui = new dat.GUI();	
+			var folderServer = null;		
 			function updateCamera() {
 				var controller = SDK.controllers[0];
 				if (controller.connected) {
@@ -98,9 +109,9 @@
 					port: 0,
 					frequency: 440,
 					duration: 1000,
+					servers: "No servers",
 				};
-				var h;
-				var gui = new dat.GUI();
+				var h;				
 				h = gui.addFolder( "Speed Translation" );
 				h.add( settings, "speedX", 0.0, 10.0, 0.1 ).name( "Translation X" );
 				h.add( settings, "speedY", 0.0, 10.0, 0.1 ).name( "Translation Y" );
@@ -112,7 +123,7 @@
 				h = gui.addFolder( "Sound (click on bottom button)" );
 				h.add( settings, "port", 0, 4, 1 ).name( "Port" );
 				h.add( settings, "frequency", 1, 1000, 1 ).name( "Frequency (Hz)" );
-				h.add( settings, "duration", 1, 5000, 1 ).name( "duration (ms)" );
+				h.add( settings, "duration", 1, 5000, 1 ).name( "duration (ms)" );				
 			}
 			// resize window
 			window.addEventListener( 'resize', onWindowResize, false );
@@ -134,8 +145,36 @@
 					console.log(freeze + " frozen: " + SDK.getErrorString(code));
 				});
 			}
+
+			function discovery() {
+				if (document.getElementById('discoveryButton').innerHTML == 'Connect on bridge') {
+					var ip = settings.servers.match(/\[(.*?)\]/g)[0].replace(/\[|\]/g, '');
+					SDK.host = ip;
+					SDK.init();
+				} else {
+					SDK.startDiscovery();
+					SDK.on('discovery', function(urls) {
+						if (folderServer != null)
+							gui.removeFolder(folderServer);
+						folderServer = gui.addFolder( "Discovery Servers" );
+						var servers = [];
+						if (urls.length > 0) {
+							for(i in urls) {
+								servers.push(`${decodeURIComponent(escape(urls[i].name))} [${urls[i].ip }]`);
+							}
+							document.getElementById('discoveryButton').innerHTML = 'Connect on bridge';							
+						} else {
+							servers.push("Not found");
+						}					
+						settings.servers = servers[0];
+						folderServer.add(settings, "servers", servers).name("Servers");
+						folderServer.open();
+					});
+				}
+			}			
 		</script>
 		<button id="soundButton" title="play sound" onclick="playSound()">Play sound</button>
 		<button id="freezeButton" title="freeze/unfreeze" onclick="freeze()">Freeze</button>
+		<button id="discoveryButton" title="discovery" onclick="discovery()">Discovery</button>
 	</body>
 </html>

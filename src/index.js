@@ -389,7 +389,7 @@ Sdk.prototype.startDiscovery = function () {
     .then((desc) => {
         console.log("setlocaldesc");
         localConnection.setLocalDescription(desc);        
-        setTimeout(() => _this.stopDiscovery(localConnection), 500);
+        setTimeout(() => _this.stopDiscovery(localConnection), 1000);
     }, (error) => {
         console.log("error create offer" + error);
     });
