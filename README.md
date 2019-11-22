@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v2.0.2
+# 3dRudderjs v2.0.3
 
 # Installation
 * **Node** ```npm install 3drudder-js```

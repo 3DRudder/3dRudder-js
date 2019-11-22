@@ -15,6 +15,8 @@ describe('SDK', function() {
             assert.equal(SDK.numberConnected, 0);
             assert.equal(SDK.autoReconnect, false);
             assert.equal(SDK.autoReconnectInterval, 5000);
+            assert.equal(SDK.discovery, false);
+            assert.equal(SDK.discoveryUrl, 'stun:224.0.0.82:15661');
 
             SDK.controllers.should.have.length(4);
             SDK.host.should.be.a.String();
@@ -77,6 +79,8 @@ describe('SDK', function() {
             SDK.playSoundTones.should.be.a.Function();
             SDK.freeze.should.be.a.Function();
             SDK.hide.should.be.a.Function();
+            SDK.startDiscovery.should.be.a.Function();
+            SDK.stopDiscovery.should.be.a.Function();
 
             var controller = SDK.controllers[0];
             controller.default.should.be.a.Function();
