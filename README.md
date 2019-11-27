@@ -11,13 +11,16 @@
 
 # 3dRudderjs v2.0.3
 
-# Installation
+## Installation
+
 * **Node** ```npm install 3drudder-js```
 
 ## API Documentation on [Wiki](https://github.com/3DRudder/3dRudder-js/wiki/API-doc)
 
 # Usage
+
 ## Node.js
+
 ```javascript
 var Sdk3dRudder = require('3drudder-js');
 // default options {host: "127.51.100.82", port: 15698, schemeWs: "wss", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
@@ -54,7 +57,9 @@ var x = rudder.axis.leftright;
 ```
 
 ## Browser
-Include in html page```<script src="../dist/3dRudder-x.x.x.js"></script>```
+
+Include in html page ```<script src="../dist/3dRudder-x.x.x.js"></script>```
+
 ```javascript
 var SDK = new Sdk3dRudder();
 SDK.init();
@@ -63,7 +68,28 @@ var x = rudder.axis.leftright;
 ...
 ```
 
-## See examples  
+## Use the discovery
+
+```javascript
+var SDK = new Sdk3dRudder({"schemeWs": "ws", "discovery": true});
+SDK.startDiscovery();
+SDK.on('discovery', function(urls) {    
+    if (urls.length > 0) {
+        for(i in urls) {
+            console.log(`${decodeURIComponent(escape(urls[i].name))} [${urls[i].ip }]`);
+        }
+        // select your url
+        SDK.host = urls[selected ID].ip;
+        SDK.init();
+    } else {
+        console.log("servers not found");
+    }    
+});
+```
+
+
+## See examples
+
 * [Axis](/examples/axis.html)  
 * [WebGL (three.js)](/examples/webgl.html)
 * [WebVR (A-Frame)](https://3drudder.github.io/aframe-3dRudder/)
@@ -81,6 +107,7 @@ var x = rudder.axis.leftright;
   * Sketchfab: http://localhost:3000/sketchfab or http://localhost:3000/sketchfab?t=ID (ID of sketchfab model)
 
 ## Build for browser
+
 * ```npm install --save-optional bufferutil``` (optionnal)
 * ```npm install browserify -g``` -g is for global install
 * ```npm install grunt-cli -g```
@@ -88,7 +115,9 @@ var x = rudder.axis.leftright;
 * Result in ```dist/3dRudder-x.x.x.js```
 
 ## Unit Test
+
 * Command ```npm test```
 
 ## TODO features
+
 * add http request for the function
