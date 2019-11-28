@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    :warning:     |    :warning:     |    :warning:     |
 
-# 3dRudderjs v2.0.3
+# 3dRudderjs v2.0.4
 
 ## Installation
 
@@ -23,11 +23,11 @@
 
 ```javascript
 var Sdk3dRudder = require('3drudder-js');
-// default options {host: "127.51.100.82", port: 15698, schemeWs: "wss", autoReconnect: false, autoReconnectInterval: 5000 /*ms*/};
+// default options {host: "127.51.100.82", port: 15698, schemeWs: "wss", autoReconnect: true, autoReconnectInterval: 500 /*ms*/};
 var SDK = new Sdk3dRudder(); 
 or
 // with options
-var opts = {host: "127.0.0.0", port: 1234, schemeWs: "ws", autoReconnect: true, autoReconnectInterval: 1000 /*1 sec*/};
+var opts = {host: "127.0.0.0", port: 1234, schemeWs: "ws", autoReconnect: false, autoReconnectInterval: 1000 /*1 sec*/};
 var SDK = new Sdk3dRudder(opts);
 
 SDK.init();
