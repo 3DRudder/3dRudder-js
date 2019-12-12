@@ -13,10 +13,11 @@ describe('SDK', function() {
             assert.equal(SDK.schemeHttp, 'http');
             assert.equal(SDK.uid, 0);
             assert.equal(SDK.numberConnected, 0);
-            assert.equal(SDK.autoReconnect, false);
-            assert.equal(SDK.autoReconnectInterval, 5000);
+            assert.equal(SDK.autoReconnect, true);
+            assert.equal(SDK.autoReconnectInterval, 500);
             assert.equal(SDK.discovery, false);
-            assert.equal(SDK.discoveryUrl, 'stun:224.0.0.82:15661');
+            assert.equal(SDK.discoveryUrl[0], 'stun:239.255.255.250:1900');
+            assert.equal(SDK.discoveryUrl[1], 'stun:224.0.0.82:15661');
 
             SDK.controllers.should.have.length(4);
             SDK.host.should.be.a.String();

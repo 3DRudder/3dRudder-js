@@ -33,7 +33,7 @@ var Sdk = function(opts) {
      * the host of server
      * @type {url}
     */
-    this.discoveryUrl = opts.discoveryUrl || 'stun:224.0.0.82:15661';
+    this.discoveryUrl = opts.discoveryUrl || ['stun:239.255.255.250:1900', 'stun:224.0.0.82:15661'];
     /**
      * the host of server
      * @type {url}
@@ -63,7 +63,7 @@ var Sdk = function(opts) {
      * the time to try to reconnect in ms
      * @type {integer}
     */
-    this.autoReconnectInterval = opts.autoReconnectInterval || 5*100;
+    this.autoReconnectInterval = opts.autoReconnectInterval || 500;
     // SDK params
     this.default();
 
@@ -288,8 +288,10 @@ Sdk.prototype.stopConnection = function () {
  * @function
  * this function must be call at first
 */
-Sdk.prototype.init = function () {
-    console.log('init SDK');    
+Sdk.prototype.init = function (ip) {    
+    if (ip != null)
+        this.host = ip;
+    console.log('init SDK ' + ip);    
     this.setupConnection();
 }
 
@@ -383,7 +385,7 @@ Sdk.prototype.hide = function (port, hide, callback) {
 */
 Sdk.prototype.startDiscovery = function () {
     console.log('discovery SDK');
-    var localConnection = new RTCPeerConnection({iceServers: [{urls: [this.discoveryUrl]}]});
+    var localConnection = new RTCPeerConnection({iceServers: [{urls: this.discoveryUrl}]});
     localConnection.createDataChannel('discovery');
     var _this = this;
     localConnection.createOffer()

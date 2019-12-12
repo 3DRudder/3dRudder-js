@@ -23,9 +23,18 @@
 				background-color: #555;
 				opacity: 0.7;
 			}
-			#discoveryButton {
+			#connectButton {
 				position: fixed;
 				bottom: 100px;
+				right: 20px;
+				padding: 8px;
+				color: #fff;
+				background-color: #555;
+				opacity: 0.7;
+			}
+			#discoveryButton {
+				position: fixed;
+				bottom: 140px;
 				right: 20px;
 				padding: 8px;
 				color: #fff;
@@ -62,7 +71,7 @@
 			scene.add( light );
 
 			// SDK init
-			var SDK = new Sdk3dRudder();
+			var SDK = new Sdk3dRudder({"schemeWs": "ws"});
 			SDK.init();
 			SDK.on('connectedDevice', function(device) {            
 			// sample curves 
@@ -110,6 +119,7 @@
 					frequency: 440,
 					duration: 1000,
 					servers: "No servers",
+					ip: "192.168.1.X",
 				};
 				var h;				
 				h = gui.addFolder( "Speed Translation" );
@@ -147,34 +157,41 @@
 			}
 
 			function discovery() {
-				if (document.getElementById('discoveryButton').innerHTML == 'Connect on bridge') {
-					var ip = settings.servers.match(/\[(.*?)\]/g)[0].replace(/\[|\]/g, '');
+				SDK.startDiscovery();
+				SDK.on('discovery', function(urls) {
+					if (folderServer != null)
+						gui.removeFolder(folderServer);
+					folderServer = gui.addFolder( "Discovery Servers" );
+					var servers = [];
+					if (urls.length > 0) {
+						for(i in urls) {
+							servers.push(`${decodeURIComponent(escape(urls[i].name))} [${urls[i].ip }]`);
+						}						
+					} else {
+						servers.push("Not found");						
+					}					
+					settings.servers = servers[0];
+					folderServer.add(settings, "servers", servers).name("Servers");					
+					folderServer.add(settings, "ip", "192.168.1.X").name("Ip");
+					folderServer.open();
+				});
+			}
+			
+			function connect() {
+				var servers = settings.servers.match(/\[(.*?)\]/g);
+				if (servers != null) {
+					var ip = servers[0].replace(/\[|\]/g, '');
 					SDK.host = ip;
 					SDK.init();
-				} else {
-					SDK.startDiscovery();
-					SDK.on('discovery', function(urls) {
-						if (folderServer != null)
-							gui.removeFolder(folderServer);
-						folderServer = gui.addFolder( "Discovery Servers" );
-						var servers = [];
-						if (urls.length > 0) {
-							for(i in urls) {
-								servers.push(`${decodeURIComponent(escape(urls[i].name))} [${urls[i].ip }]`);
-							}
-							document.getElementById('discoveryButton').innerHTML = 'Connect on bridge';							
-						} else {
-							servers.push("Not found");
-						}					
-						settings.servers = servers[0];
-						folderServer.add(settings, "servers", servers).name("Servers");
-						folderServer.open();
-					});
+				} else if (settings.ip != "192.168.1.X") {					
+					SDK.host = settings.ip;
+					SDK.init();
 				}
-			}			
+			}
 		</script>
 		<button id="soundButton" title="play sound" onclick="playSound()">Play sound</button>
 		<button id="freezeButton" title="freeze/unfreeze" onclick="freeze()">Freeze</button>
-		<button id="discoveryButton" title="discovery" onclick="discovery()">Discovery</button>
+		<button id="discoveryButton" title="discovery" onclick="discovery()">Discovery (does not work with server wireless)</button>
+		<button id="connectButton" title="connect" onclick="connect()">Connect</button>
 	</body>
 </html>

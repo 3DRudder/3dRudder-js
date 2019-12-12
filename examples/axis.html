@@ -4,7 +4,7 @@
     <title>API SDK 3dRudder</title>
     <script src="../dist/3dRudder-2.0.3.js"></script>
     <script> 
-        var SDK = new Sdk3dRudder();                   
+        var SDK = new Sdk3dRudder({"schemeWs": "ws"});                   
         // initialized
         SDK.on('init', function(init) {
             console.log('init uid ' + init.uid + '= SDK uid ' + this.uid);
@@ -53,9 +53,15 @@
             connect = !connect;
             if (connect) {                
                 let radio = document.querySelector('input[name="server"]:checked');
+                let ip;
                 if (radio)
-                    SDK.host = radio.value;
-                SDK.init();
+                    ip = radio.value;
+                else {
+                    let textIp = document.getElementById("ip").value;
+                    if (textIp)
+                        ip = textIp;
+                }
+                SDK.init(ip);
                 document.getElementById('button').innerHTML = "Stop connection";
             }
             else {
@@ -88,8 +94,13 @@
 </head>
 <body>
     <h1>Messages</h1>
-    <button id="disco" onClick="tryDiscovery()">Try Discovery</button>
+    <button id="disco" onClick="tryDiscovery()">Try Discovery (does not work with server wireless)</button>
     <div id="servers"></div>
+    <br>
+    If you don't find server, you can enter the IP:<br>
+    You can find the IP on the <a href="https://support.3drudder.com/portal/kb/articles/dashboard-user-manual#About_Page">About page</a> of 3dRudder Dashboard<br>
+    <input type="text" id="ip" placeholder="192.168.1.X"><br>
+    <br>
     <button id="button" onClick="startStop()">Start connection</button>
     <br>
     <div id="device"></div>
