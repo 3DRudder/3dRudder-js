@@ -72,21 +72,32 @@
 
 			// SDK init
 			var SDK = new Sdk3dRudder({"schemeWs": "ws"});
-			SDK.init();
+			//SDK.init();
 			SDK.on('connectedDevice', function(device) {            
-			// sample curves 
-			var controller = SDK.controllers[device.port];        
-			controller.setAxesParam({
-				roll2YawCompensation: 0.0,
-				nonSymmetricalPitch: true,
-				curves: {
-					leftright: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
-					forwardbackward: {deadzone: 0.15, xSat: 1.0, exp: 2.0},					
-					updown: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
-					rotation: {deadzone: 0.15, xSat: 1.0, exp: 1.0}
+				if (device.connected) {
+					document.getElementById("connectButton").innerHTML = "Disconnect";
+					document.getElementById("freezeButton").hidden = false;
+					document.getElementById("soundButton").hidden = false;
+					connected = true;
+					// sample curves 
+					var controller = SDK.controllers[device.port];        
+					controller.setAxesParam({
+						roll2YawCompensation: 0.0,
+						nonSymmetricalPitch: true,
+						curves: {
+							leftright: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+							forwardbackward: {deadzone: 0.15, xSat: 1.0, exp: 2.0},					
+							updown: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+							rotation: {deadzone: 0.15, xSat: 1.0, exp: 1.0}
+						}
+					});
+				} else {
+					document.getElementById("connectButton").innerHTML = "Connect";
+					document.getElementById("freezeButton").hidden = true;
+					document.getElementById("soundButton").hidden = true;
+					connected = false;
 				}
 			});
-		});
 			var settings;
 			var gui = new dat.GUI();	
 			var folderServer = null;		
@@ -169,28 +180,39 @@
 						}						
 					} else {
 						servers.push("Not found");						
+						folderServer.add(settings, "ip", "192.168.1.X").name("Ip");
 					}					
 					settings.servers = servers[0];
 					folderServer.add(settings, "servers", servers).name("Servers");					
-					folderServer.add(settings, "ip", "192.168.1.X").name("Ip");
 					folderServer.open();
 				});
 			}
 			
+			var connected = false;
 			function connect() {
-				var servers = settings.servers.match(/\[(.*?)\]/g);
-				if (servers != null) {
-					var ip = servers[0].replace(/\[|\]/g, '');
-					SDK.host = ip;
+				if (!connected) {
+					var servers = settings.servers.match(/\[(.*?)\]/g);
+					if (servers != null) {
+						var ip = servers[0].replace(/\[|\]/g, '');
+						SDK.host = ip;
+					} else if (settings.ip != "192.168.1.X") {					
+						SDK.host = settings.ip;					
+					}
 					SDK.init();
-				} else if (settings.ip != "192.168.1.X") {					
-					SDK.host = settings.ip;
-					SDK.init();
+				} else {
+					SDK.stop();					
 				}
 			}
+
+			SDK.on('end', function() {
+				document.getElementById("connectButton").innerHTML = "Connect";
+				document.getElementById("freezeButton").hidden = true;
+				document.getElementById("soundButton").hidden = true;
+				connected = false;
+			});
 		</script>
-		<button id="soundButton" title="play sound" onclick="playSound()">Play sound</button>
-		<button id="freezeButton" title="freeze/unfreeze" onclick="freeze()">Freeze</button>
+		<button id="soundButton" title="play sound" onclick="playSound()" hidden=true>Play sound</button>
+		<button id="freezeButton" title="freeze/unfreeze" onclick="freeze()" hidden=true>Freeze</button>
 		<button id="discoveryButton" title="discovery" onclick="discovery()">Discovery (does not work with server wireless)</button>
 		<button id="connectButton" title="connect" onclick="connect()">Connect</button>
 	</body>

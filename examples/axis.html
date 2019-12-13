@@ -45,6 +45,8 @@
                     selectList.innerHTML += `<label for="${i}">${decodeURIComponent(escape(urls[i].name))}</label>`;                    
                     //document.getElementById('servers').innerHTML += `<option value=${urls[i].ip}>Ip: ${urls[i].ip} name: ${decodeURIComponent(escape(urls[i].name))} </option>`;
                 }
+            } else {
+                document.getElementById('help').hidden = false;
             }
         });
 
@@ -52,16 +54,15 @@
         function startStop() {
             connect = !connect;
             if (connect) {                
-                let radio = document.querySelector('input[name="server"]:checked');
-                let ip;
+                let radio = document.querySelector('input[name="server"]:checked');                
                 if (radio)
-                    ip = radio.value;
+                    SDK.host = radio.value;
                 else {
                     let textIp = document.getElementById("ip").value;
                     if (textIp)
-                        ip = textIp;
+                        SDK.host = textIp;
                 }
-                SDK.init(ip);
+                SDK.init();
                 document.getElementById('button').innerHTML = "Stop connection";
             }
             else {
@@ -89,7 +90,7 @@
         function tryDiscovery() {
             document.getElementById('servers').innerHTML = `looking for servers...`;
             SDK.startDiscovery();
-        }
+        }        
     </script>
 </head>
 <body>
@@ -97,9 +98,11 @@
     <button id="disco" onClick="tryDiscovery()">Try Discovery (does not work with server wireless)</button>
     <div id="servers"></div>
     <br>
-    If you don't find server, you can enter the IP:<br>
-    You can find the IP on the <a href="https://support.3drudder.com/portal/kb/articles/dashboard-user-manual#About_Page">About page</a> of 3dRudder Dashboard<br>
-    <input type="text" id="ip" placeholder="192.168.1.X"><br>
+    <div id="help" hidden=true>
+        If you don't find server, you can enter the IP:<br>
+        You can find the IP on the <a href="https://support.3drudder.com/portal/kb/articles/dashboard-user-manual#About_Page">About page</a> of 3dRudder Dashboard<br>
+        <input type="text" id="ip" placeholder="192.168.1.X"><br>
+    </div>
     <br>
     <button id="button" onClick="startStop()">Start connection</button>
     <br>
