@@ -35,6 +35,11 @@ var Sdk = function(opts) {
     */
     this.discoveryUrl = opts.discoveryUrl || ['stun:239.255.255.250:1900', 'stun:224.0.0.82:15661'];
     /**
+     * the time to wait end discovery
+     * @type {integer}
+    */
+   this.waitDiscovery = opts.waitDiscovery || 3000;
+    /**
      * the host of server
      * @type {url}
     */
@@ -392,7 +397,7 @@ Sdk.prototype.startDiscovery = function () {
     .then((desc) => {
         console.log("setlocaldesc");
         localConnection.setLocalDescription(desc);        
-        setTimeout(() => _this.stopDiscovery(localConnection), 3000);
+        setTimeout(() => _this.stopDiscovery(localConnection), this.waitDiscovery);
     }, (error) => {
         console.log("error create offer" + error);
     });

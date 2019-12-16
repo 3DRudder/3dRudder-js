@@ -18,6 +18,7 @@ describe('SDK', function() {
             assert.equal(SDK.discovery, false);
             assert.equal(SDK.discoveryUrl[0], 'stun:239.255.255.250:1900');
             assert.equal(SDK.discoveryUrl[1], 'stun:224.0.0.82:15661');
+            assert.equal(SDK.waitDiscovery, 3000);
 
             SDK.controllers.should.have.length(4);
             SDK.host.should.be.a.String();

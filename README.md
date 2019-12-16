@@ -7,9 +7,9 @@
 |   Chrome   |    ✔     |    ✔     |    ✔     |
 |   FireFox  |    ✔     |    ✔    |    ✔     |
 |   Edge   |    ✔     |    ✔    |    :x:     |
-|   Safari   |    :warning:     |    :warning:     |    :warning:     |
+|   Safari   |    ✔     |    ✔     |    :warning:     |
 
-# 3dRudderjs v2.0.4
+# 3dRudderjs v2.0.5
 
 ## Installation
 
