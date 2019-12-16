@@ -1,0 +1,7 @@
+.git
+device.*
+*.lock
+tcpserver.js
+udpclient.js
+_site
+*.tgz

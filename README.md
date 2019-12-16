@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    ✔     |    ✔     |    :warning:     |
 
-# 3dRudderjs v2.0.5
+# 3dRudderjs v2.0.6
 
 ## Installation
 
