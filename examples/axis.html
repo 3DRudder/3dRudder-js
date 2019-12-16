@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>API SDK 3dRudder</title>
-    <script src="../dist/3dRudder-2.0.6.js"></script>
+    <script src="../dist/3dRudder-2.0.7.js"></script>
     <script> 
         var SDK = new Sdk3dRudder({"schemeWs": "ws"});                   
         // initialized
@@ -10,6 +10,12 @@
             console.log('init uid ' + init.uid + '= SDK uid ' + this.uid);
             document.getElementById('device').innerHTML = 'server is on SDK version:' + init.version;
             document.getElementById('main').hidden = false;
+        });
+        SDK.on('connectedDevice', function(device) {            
+            if (device.connected) {
+                connected = true;
+                document.getElementById('button').innerHTML = "Stop connection";
+            }
         });
         // on tick each frame 20ms
         SDK.on('frame', function(frame) {
@@ -56,14 +62,13 @@
             if (connect) {                
                 let radio = document.querySelector('input[name="server"]:checked');                
                 if (radio)
-                    SDK.host = radio.value;
+                    SDK.init(radio.value);
                 else {
                     let textIp = document.getElementById("ip").value;
                     if (textIp)
-                        SDK.host = textIp;
-                }
-                SDK.init();
-                document.getElementById('button').innerHTML = "Stop connection";
+                        SDK.init(textIp);
+                }            
+                
             }
             else {
                 SDK.stop();

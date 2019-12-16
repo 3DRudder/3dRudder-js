@@ -1,6 +1,6 @@
 ![license](https://img.shields.io/github/license/mashape/apistatus.svg)
 ![language](https://img.shields.io/badge/Language-javascript-green.svg) 
-![Node.js](https://img.shields.io/badge/Node.js-v8.9.1-green.svg)
+![Node.js](https://img.shields.io/badge/Node.js-v12.13.1-green.svg)
 
 |      Browsers     | HTTP/WS  | HTTPS/WSS  | File://  |
 |:--------------:|:--------:|:--------:|:--------:|
@@ -9,7 +9,7 @@
 |   Edge   |    ✔     |    ✔    |    :x:     |
 |   Safari   |    ✔     |    ✔     |    :warning:     |
 
-# 3dRudderjs v2.0.6
+# 3dRudderjs v2.0.7
 
 ## Installation
 
@@ -79,8 +79,7 @@ SDK.on('discovery', function(urls) {
             console.log(`${decodeURIComponent(escape(urls[i].name))} [${urls[i].ip }]`);
         }
         // select your url
-        SDK.host = urls[selected ID].ip;
-        SDK.init();
+        SDK.init(urls[selected ID].ip);
     } else {
         console.log("servers not found");
     }    
