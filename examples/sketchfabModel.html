@@ -10,7 +10,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/4.0.1/math.min.js"></script>
     <!--<script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.1.0.js"></script>-->
     <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.4.2.js"></script>
-    <script src="../dist/3dRudder-2.0.2.js"></script>
+    <script src="../dist/3dRudder-2.0.7.js"></script>
     <script src="js/three.min.js"></script>
 </head>
 
@@ -263,6 +263,15 @@
         border-color: #1bb599;
         width: 15%;
     }
+
+    button {        
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: white;        
+        padding: 12px 20px 12px 40px;        
+    }
 </style>
 
 <body bgcolor="#EAEAEA" style="width:auto; margin:auto; ">
@@ -323,6 +332,22 @@
     <hr>
 </div>
 
+<div style="margin-left: 3%; margin-bottom: 5px">
+    <button id="disco" onClick="tryDiscovery()">Try Discovery (does not work with server wireless)</button>
+    <div id="servers" class="customText"></div>
+    <br>
+    <div id="help" class="customText" hidden=true>
+        If you don't find server, you can enter the IP:<br>
+        You can find the IP on the <a href="https://support.3drudder.com/portal/kb/articles/dashboard-user-manual#About_Page">About page</a> of 3dRudder Dashboard<br>
+        <input type="text" id="ip" placeholder="192.168.1.X"><br>
+    </div>
+    <br>
+    <button id="button" onClick="startStop()">Start connection</button>
+    <br>
+    <div id="device" class="customText"></div>
+    <div id="error"></div>
+    <br>
+</div>
 <div class="search-container" style="margin-left: 3%; margin-bottom: 5px">
     <input type="text" placeholder="Search.." name="search" id="searchField" >
     <!--<button type="submit" onclick="sendNewRequest()" id="searchButton"><i class="fa fa-search"></i></button>-->
@@ -371,23 +396,73 @@
     let leftRightSpeed = 1;
 
     // 3dRudder SDK init
-    let SDK = new Sdk3dRudder();
-    SDK.init();
+    let SDK = new Sdk3dRudder({"schemeWs": "ws"});
+    let connect = false;
+    //SDK.init();
     SDK.on('connectedDevice', function(device) {
-        // sample curves with deadzone 0.1
-        let controller = SDK.controllers[device.port];
-        controller.setAxesParam({
-            roll2YawCompensation: 0.0,
-            nonSymmetricalPitch: false,
-            curves: {
-                leftright: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
-                forwardbackward: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
-                updown: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
-                rotation: {deadzone: 0.15, xSat: 1.0, exp: 1.0}
-            }
-        });
+        if (device.connected) {
+            connected = true;
+            document.getElementById('button').innerHTML = "Stop connection";
+            // sample curves with deadzone 0.1
+            let controller = SDK.controllers[device.port];
+            controller.setAxesParam({
+                roll2YawCompensation: 0.0,
+                nonSymmetricalPitch: false,
+                curves: {
+                    leftright: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                    forwardbackward: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                    updown: {deadzone: 0.15, xSat: 1.0, exp: 2.0},
+                    rotation: {deadzone: 0.15, xSat: 1.0, exp: 1.0}
+                }
+            });
+        }
     });
 
+    SDK.on('discovery', function(urls) {
+        document.getElementById('servers').innerHTML = `<label for="server">${urls.length} server(s) found</label>`;
+        if (urls.length > 0) {
+            //this.host = urls[i].ip;                
+            var selectList = document.createElement("fieldset");
+            selectList.id = "server";
+            document.getElementById('servers').appendChild(selectList);
+            for(i in urls) {
+                var option = document.createElement("input");
+                option.type = "radio";
+                option.value = urls[i].ip;
+                option.name = "server";
+                option.id = i;
+                //option.text = decodeURIComponent(escape(urls[i].name));                    
+                selectList.appendChild(option);
+                selectList.innerHTML += `<label for="${i}">${decodeURIComponent(escape(urls[i].name))}</label>`;                    
+                //document.getElementById('servers').innerHTML += `<option value=${urls[i].ip}>Ip: ${urls[i].ip} name: ${decodeURIComponent(escape(urls[i].name))} </option>`;
+            }
+        } else {
+            document.getElementById('help').hidden = false;
+        }
+    });
+
+    function startStop() {
+        connect = !connect;
+        if (connect) {                
+            let radio = document.querySelector('input[name="server"]:checked');                
+            if (radio)
+                SDK.init(radio.value);
+            else {
+                let textIp = document.getElementById("ip").value;
+                if (textIp)
+                    SDK.init(textIp);
+            }
+        }
+        else {
+            SDK.stop();
+            document.getElementById('button').innerHTML = "Start connection";
+        }
+    }
+
+    function tryDiscovery() {
+        document.getElementById('servers').innerHTML = `looking for servers...`;
+        SDK.startDiscovery();
+    }
     //Init sliders settings
     let sliderRot = document.getElementById("speedRotationRange");
     let outputRot = document.getElementById("speedRotation");
