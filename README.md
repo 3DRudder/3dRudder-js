@@ -11,6 +11,8 @@
 
 # 3dRudderjs v2.0.7
 
+[NPM 3dRudder-js](https://www.npmjs.com/package/3drudder-js)
+
 ## Installation
 
 * **Node** ```npm install 3drudder-js```
